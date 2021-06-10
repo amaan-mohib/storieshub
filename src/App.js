@@ -1,25 +1,34 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import AuthProvider from "./contexts/AuthContext";
+import Login from "./components/Login";
+import Home from "./components/Home";
+import Teams from "./components/Teams";
+import Create from "./components/Create";
+import PrivateRoute from "./components/PrivateRoute";
+import Edit from "./components/Edit";
+import Browse from "./components/Browse";
+import Profile from "./components/Profile";
+import EasterEgg from "./components/EasterEgg";
+import Join from "./components/Join";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <AuthProvider>
+        <Switch>
+          <Route exact path="/" component={Home} />
+          <Route path="/login" component={Login} />
+          <Route path="/browse" component={Browse} />
+          <Route path="/teams" component={Teams} />
+          <Route path="/logout" component={EasterEgg} />
+          <Route path="/profile/:uid" component={Profile} />
+          <Route path="/join/:id/:uuid" component={Join} />
+          <PrivateRoute path="/create" component={Create} />
+          <PrivateRoute path="/edit/:id" component={Edit} />
+        </Switch>
+      </AuthProvider>
+    </Router>
   );
 }
 
