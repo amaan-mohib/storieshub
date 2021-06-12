@@ -105,6 +105,7 @@ const Profile = () => {
                 <div style={{ display: "flex", margin: "10px 0" }}>
                   {tabs.map((tab, index) => (
                     <button
+                      key={index}
                       className={`dropdown-item tab-icon${activeClass(index)}`}
                       onClick={() => setActiveTab(index)}>
                       <FeatherIcon
@@ -136,8 +137,9 @@ const Books = ({ uid }) => {
       .get()
       .then((querySnapshot) => {
         const docs = querySnapshot.docs.map((doc) => doc.data());
-        setBooks(docs.reverse());
-        console.log(docs);
+        setBooks(
+          docs.sort((a, b) => b.updatedAt.toDate() - a.updatedAt.toDate())
+        );
       })
       .catch((err) => console.error(err));
   }, [uid]);
@@ -145,7 +147,7 @@ const Books = ({ uid }) => {
     <div style={{ marginTop: "5px" }}>
       {books.length > 0 ? (
         books.map((b) => (
-          <div className="feed">
+          <div className="feed" key={b.title}>
             <div className="feed-title">
               <div>
                 <Link className="feed-title-heading" to={`/edit/${b.id}`}>
@@ -179,7 +181,7 @@ const Books = ({ uid }) => {
               ))}
             </div>
             <div className="published">
-              {b.updatedAt.toDate().toDateString()}
+              {b.updatedAt && b.updatedAt.toDate().toDateString()}
             </div>
           </div>
         ))
@@ -191,11 +193,23 @@ const Books = ({ uid }) => {
 };
 const Published = ({ uid }) => {
   const [books, setBooks] = useState([]);
+  useEffect(() => {
+    db.collection("published")
+      .where("uids", "array-contains", uid)
+      .get()
+      .then((querySnapshot) => {
+        const docs = querySnapshot.docs.map((doc) => doc.data());
+        setBooks(
+          docs.sort((a, b) => b.updatedAt.toDate() - a.updatedAt.toDate())
+        );
+      })
+      .catch((err) => console.error(err));
+  }, [uid]);
   return (
     <div style={{ marginTop: "5px" }}>
       {books.length > 0 ? (
         books.map((b) => (
-          <div className="feed">
+          <div className="feed" key={b.title}>
             <div className="feed-title">
               <div>
                 <Link className="feed-title-heading" to={`/book/${b.id}`}>

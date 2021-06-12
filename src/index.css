@@ -27,6 +27,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 h1,
 h2 {
   font-family: "PT Serif", serif !important;
@@ -212,6 +213,7 @@ hr {
 }
 .button svg {
   margin-right: 12px;
+  width: 20px;
 }
 .top-buts {
   display: flex;
@@ -276,6 +278,7 @@ hr {
 }
 .feed-title-heading {
   text-decoration: none;
+  text-transform: capitalize;
   color: var(--text-color);
 }
 .feed-title-heading:hover {
@@ -389,6 +392,21 @@ select:hover {
   margin-right: 10px;
   width: 32px;
 }
+.team-member-div {
+  display: flex;
+  align-items: center;
+}
+.request {
+  width: 100%;
+  justify-content: space-between !important;
+}
+.link {
+  cursor: pointer;
+  font-size: small;
+}
+.link:hover {
+  text-decoration: underline;
+}
 .title-field {
   font-family: "PT Serif", serif !important;
   text-transform: capitalize;
@@ -415,6 +433,7 @@ select {
   display: flex;
   flex-direction: column;
   margin: 0;
+  justify-content: space-between;
 }
 .teams {
   padding: 5px;
@@ -429,7 +448,32 @@ select {
 .editor-class {
   padding: 5px;
 }
-
+.prs {
+  margin: 5px 0;
+  background-color: var(--background);
+  border-radius: 0.5rem;
+  border: 1px solid var(--hr);
+  padding: 8px;
+  cursor: pointer;
+}
+.prs:hover {
+  background-color: var(--hover);
+}
+.prs:active {
+  background-color: var(--active);
+}
+.pr-title {
+  font-family: "PT Serif", serif !important;
+  text-transform: capitalize;
+  font-weight: bold;
+  margin-bottom: 2px;
+  transition-duration: 0.4s;
+}
+.pr-desc {
+  font-family: "PT Serif", serif !important;
+  font-size: smaller;
+  margin-top: 2px;
+}
 .toolbar-class,
 .wrapper-class {
   background-color: var(--textfield) !important;
@@ -476,7 +520,12 @@ select {
 .sticky {
   position: sticky;
   top: var(--nav-height);
-  z-index: 100;
+  z-index: 100 !important;
+}
+.sticky1 {
+  position: sticky;
+  top: var(--nav-height);
+  z-index: 100 !important;
 }
 .fab {
   position: fixed;
@@ -510,6 +559,7 @@ select {
   width: -webkit-fill-available;
   width: stretch;
   max-width: 360px;
+  z-index: 10;
 }
 .sidebar-content {
   border-radius: 0.5rem;
@@ -521,6 +571,8 @@ select {
   display: flex;
   height: 100%;
   overflow-wrap: break-word;
+  overflow-y: auto;
+  z-index: 10;
 }
 .heading-h3 {
   font-family: "PT Serif", serif !important;
@@ -546,6 +598,99 @@ select {
 }
 .button:disabled:hover {
   background-color: var(-);
+}
+.mobile-body {
+  background-color: var(--textfield);
+}
+.mobile-body textarea {
+  margin-top: 5px;
+  font-family: "PT Serif", serif !important;
+  height: fit-content;
+  min-height: 30vh;
+  resize: inherit;
+}
+.mobile-body-span,
+.mobile-body-span p,
+.mobile-body-span p > * {
+  font-family: "PT Serif", serif !important;
+  margin-bottom: 5px;
+}
+
+.accordion {
+  background-color: var(--nav-background);
+  width: 100%;
+  padding: 8px;
+  border-radius: 0.5rem;
+  border: 1px solid var(--hr);
+  height: fit-content;
+  margin-bottom: 10px;
+}
+.accordion-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* padding: px 0; */
+  cursor: pointer;
+}
+.sidebarContent {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.dialog-bg {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 100000;
+}
+.dialog {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--background);
+  padding: 10px;
+  width: 80vw;
+  border: 1px solid var(--hr);
+  border-radius: 0.5rem;
+  transition-duration: 0.4s;
+  z-index: 10000;
+}
+.dialog-title {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.dialog-body {
+  padding: 10px;
+  font-family: "PT Serif", serif !important;
+  max-height: 100%;
+  overflow-y: auto;
+}
+.dialog-body > * {
+  font-family: "PT Serif", serif !important;
+  margin: 5px 0;
+}
+.dialog-actions div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px;
+}
+.dialog-actions div > * {
+  margin: 0 5px;
+}
+.dialog-title h1 {
+  text-transform: capitalize;
 }
 @-webkit-keyframes spin {
   0% {
@@ -584,10 +729,28 @@ select {
     box-shadow: none;
     margin-top: 20px;
   }
+  h1 {
+    font-size: 36px; /* Some tweener fallback that doesn't look awful */
+    font-size: 5.4vw;
+  }
+}
+.preview h1 {
+  text-transform: capitalize;
 }
 @media only screen and (max-width: 380px) {
   .dropdown {
     width: calc(100vw - 20px);
+  }
+  .dialog {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+  .dialog-actions {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
   }
 }
 @media only screen and (max-width: 845px) {
@@ -612,6 +775,9 @@ select {
   .sticky {
     top: calc(var(--nav-height) * 2);
   }
+  .sticky1 {
+    top: calc(var(--nav-height) * 2);
+  }
   .edit-tab {
     position: fixed;
     padding-top: 10px;
@@ -627,7 +793,12 @@ select {
     overflow-wrap: break-word;
     max-width: 360px;
   }
+  .preview {
+    min-height: calc(var(--full-height) - var(--nav-height));
+  }
   .preview-main {
     margin-top: calc(var(--nav-height) * 2);
+    max-width: 850px;
+    width: 100%;
   }
 }

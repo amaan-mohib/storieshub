@@ -13,6 +13,10 @@ const Join = () => {
   const { user } = useAuth();
   return user ? <JoinBody /> : <NotSignedIn />;
 };
+export const JoinRequest = () => {
+  const { user } = useAuth();
+  return user ? <JoinRequestBody /> : <NotSignedIn />;
+};
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -55,6 +59,40 @@ const JoinBody = () => {
     </div>
   );
 };
+const JoinRequestBody = () => {
+  const { id } = useParams();
+  const [data, setData] = useState({});
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    let docRef = db.collection("books").doc(id);
+    docRef
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          setData(doc.data());
+          console.log(doc.data());
+        } else {
+          setError(true);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, [id]);
+  return (
+    <div>
+      <Navbar />
+      {Object.keys(data).length !== 0 && (
+        <div className="main">
+          {!error ? (
+            <Card data={data} />
+          ) : (
+            <p>Please check the team ID. The ID do not exists.</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+};
 const Card = ({ data }) => {
   const { user } = useAuth();
   let query = useQuery();
@@ -87,6 +125,22 @@ const Card = ({ data }) => {
             { merge: true }
           )
           .then(() => {
+            db.collection("requests")
+              .doc(data.id)
+              .get()
+              .then((doc) => {
+                if (doc.exists) {
+                  db.collection("requests")
+                    .doc(data.id)
+                    .set(
+                      {
+                        members: timestamp.increment(1),
+                      },
+                      { merge: true }
+                    )
+                    .catch((err) => console.error(err));
+                }
+              });
             setLoading(false);
             history.push(`/edit/${data.id}`);
             console.log("added book id to user");
@@ -119,10 +173,12 @@ const Card = ({ data }) => {
   };
   return (
     <div className="feed team">
-      <h2>{data.title}</h2>
+      <h2 className="feed-title-heading">{data.title}</h2>
       <p className="details">{`${data.authors.length} member${
         data.authors.length > 1 ? "s" : ""
-      } • ${data.updatedAt.toDate().toLocaleDateString()}`}</p>
+      } • ${
+        data.updatedAt && data.updatedAt.toDate().toLocaleDateString()
+      }`}</p>
       <hr />
       <div className="members">
         <ul className="team-members">
@@ -150,8 +206,8 @@ const Card = ({ data }) => {
         <p>
           <b>{genres[Number(data.genre)]}</b>
         </p>
-        {data.tags.map((k) => (
-          <p>{k}</p>
+        {data.tags.map((k, i) => (
+          <p key={i}>{k}</p>
         ))}
       </div>
       <hr />
@@ -178,8 +234,8 @@ const Card = ({ data }) => {
       ) : (
         <button
           disabled={
-            data.uids.includes(user.uid) ||
-            data.requestUids.includes(user.uid) ||
+            (data.uids && data.uids.includes(user.uid)) ||
+            (data.requestUids && data.requestUids.includes(user.uid)) ||
             req
           }
           onClick={request}

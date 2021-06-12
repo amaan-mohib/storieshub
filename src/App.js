@@ -10,7 +10,7 @@ import Edit from "./components/Edit";
 import Browse from "./components/Browse";
 import Profile from "./components/Profile";
 import EasterEgg from "./components/EasterEgg";
-import Join from "./components/Join";
+import Join, { JoinRequest } from "./components/Join";
 
 function App() {
   return (
@@ -24,6 +24,7 @@ function App() {
           <Route path="/logout" component={EasterEgg} />
           <Route path="/profile/:uid" component={Profile} />
           <Route path="/join/:id/:uuid" component={Join} />
+          <Route path="/join/:id" exact component={JoinRequest} />
           <PrivateRoute path="/create" component={Create} />
           <PrivateRoute path="/edit/:id" component={Edit} />
         </Switch>

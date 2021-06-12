@@ -67,6 +67,7 @@ const Footer = () => {
                     leader: true,
                   }),
                   uids: timestamp.arrayUnion(user.uid),
+                  leader: user.uid,
                 })
                 .then(() => {
                   console.log("created book with id: ", docRef.id);
