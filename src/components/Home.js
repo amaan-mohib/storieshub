@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import Feed from "./Feed";
 import { SmallLogin } from "./Login";
 import Navbar from "./Navbar";
 import FeatherIcon from "feather-icons-react";
+import { db } from "../firebase";
+import { LoaderIcon } from "./Edit";
 
 const Home = () => {
   const { user } = useAuth();
@@ -14,54 +16,30 @@ const Home = () => {
 export const Feeds = () => {
   const { user } = useAuth();
   const [sort, setSort] = useState(0);
-  const feed = [
-    {
-      id: "abc",
-      title: "Lorem Ipsum",
-      synopsis:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit",
-      authors: [
-        { id: "luke", name: "Luke" },
-        { id: "anakin", name: "Anakin" },
-        { id: "kenobi", name: "Obi-Wan Kenobi" },
-        { id: "maul", name: "Darth Maul" },
-      ],
-      likes: 999,
-      keywords: ["def", "ijk", "lmno"],
-      publishedAt: "6th June, 2021",
-    },
-    {
-      id: "def",
-      title: "Lorem Ipsum",
-      synopsis:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit",
-      authors: [
-        { id: "luke", name: "Luke" },
-        { id: "anakin", name: "Anakin" },
-        { id: "kenobi", name: "Obi-Wan Kenobi" },
-        { id: "maul", name: "Darth Maul" },
-        { id: "maul", name: "Darth Maul" },
-      ],
-      likes: 6,
-      keywords: ["def", "ijk", "lmno"],
-      publishedAt: "6th June, 2021",
-    },
-    {
-      id: "def",
-      title: "Lorem Ipsum",
-      synopsis:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit",
-      authors: [
-        { id: "luke", name: "Luke" },
-        { id: "anakin", name: "Anakin" },
-        { id: "kenobi", name: "Obi-Wan Kenobi" },
-        { id: "maul", name: "Darth Maul" },
-      ],
-      likes: 6,
-      keywords: ["def", "ijk", "lmno"],
-      publishedAt: "6th June, 2021",
-    },
-  ];
+  const [feed, setFeed] = useState([]);
+  useEffect(() => {
+    let docRef = db.collection("published");
+    if (sort === 0) {
+      setFeed([]);
+      docRef
+        .orderBy("likes", "desc")
+        .get()
+        .then((query) => {
+          const docs = query.docs.map((doc) => doc.data());
+          setFeed(docs);
+        });
+    }
+    if (sort === 1) {
+      setFeed([]);
+      docRef
+        .orderBy("updatedAt", "desc")
+        .get()
+        .then((query) => {
+          const docs = query.docs.map((doc) => doc.data());
+          setFeed(docs);
+        });
+    }
+  }, [sort]);
   const activeClass = (index) => {
     return sort === index ? " tab-active" : "";
   };
@@ -69,6 +47,7 @@ export const Feeds = () => {
     { name: "Top", icon: "chevrons-up" },
     { name: "New", icon: "star" },
   ];
+
   return (
     <div>
       <Navbar />
@@ -90,7 +69,9 @@ export const Feeds = () => {
             {sortFilters.map((filter, index) => (
               <button
                 className={`dropdown-item tab-icon${activeClass(index)}`}
-                onClick={() => setSort(index)}>
+                onClick={() => {
+                  setSort(index);
+                }}>
                 <FeatherIcon
                   icon={filter.icon}
                   className={`${
@@ -103,9 +84,19 @@ export const Feeds = () => {
               </button>
             ))}
           </div>
-          {feed.map((data) => (
-            <Feed data={data} />
-          ))}
+          {feed.length > 0 ? (
+            feed.map((data) => <Feed data={data} />)
+          ) : (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginRight: "-5px",
+              }}>
+              {LoaderIcon}
+            </div>
+          )}
         </div>
       </div>
     </div>

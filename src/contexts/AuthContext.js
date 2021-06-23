@@ -24,10 +24,9 @@ const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  function logout() {
-    return auth.signOut().then(() => {
-      history.push("/");
-    });
+  async function logout() {
+    await auth.signOut();
+    history.replace("/");
   }
   const value = {
     user,

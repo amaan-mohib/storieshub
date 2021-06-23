@@ -224,7 +224,9 @@ const TagInput = () => {
         {tags.map((tag, index) => (
           <p>
             {tag}
-            <button onClick={() => deleteTag(index)}>🞩</button>
+            <button onClick={() => deleteTag(index)}>
+              <FeatherIcon icon="x" size="15" />
+            </button>
           </p>
         ))}
         {tags.length < 4 && (

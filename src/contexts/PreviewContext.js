@@ -22,6 +22,8 @@ const PreviewProvider = ({ children }) => {
   const [render, changeRender] = useState(0);
   const [prs, changePrs] = useState(0);
   const [requested, changeRequested] = useState(false);
+  const [messages, changeMessages] = useState([]);
+  const [read, changeRead] = useState(0);
   function setTitle(title) {
     changeTitle(title);
   }
@@ -67,6 +69,12 @@ const PreviewProvider = ({ children }) => {
   function setRequests(data) {
     changeRequests(data);
   }
+  function setMessages(data) {
+    changeMessages(data);
+  }
+  function setRead(data) {
+    changeRead(data);
+  }
   const value = {
     title,
     setTitle,
@@ -98,6 +106,10 @@ const PreviewProvider = ({ children }) => {
     setRequested,
     requests,
     setRequests,
+    messages,
+    setMessages,
+    read,
+    setRead,
   };
   return (
     <PreviewContext.Provider value={value}>{children}</PreviewContext.Provider>

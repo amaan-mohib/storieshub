@@ -32,23 +32,27 @@ const Groups = () => {
       .catch((err) => console.error(err));
   }, []);
   const joinCode = () => {
-    const transalator = short();
-    const joinID = transalator.toUUID(uuid);
-    let docRef = db.collection("books");
-    setLoading(true);
-    docRef
-      .where("joinID", "==", joinID)
-      .get()
-      .then((doc) => {
-        const docs = doc.docs.map((d) => d.data());
-        setLoading(false);
-        if (docs.length > 0) {
-          let id = docs[0].id;
-          history.push(`/join/${id}?invite=true`);
-        } else {
-          setError(true);
-        }
-      });
+    if (uuid !== "") {
+      const transalator = short();
+      const joinID = transalator.toUUID(uuid);
+      let docRef = db.collection("books");
+      setLoading(true);
+      docRef
+        .where("joinID", "==", joinID)
+        .get()
+        .then((doc) => {
+          const docs = doc.docs.map((d) => d.data());
+          setLoading(false);
+          if (docs.length > 0) {
+            let id = docs[0].id;
+            history.push(`/join/${id}?invite=true`);
+          } else {
+            setError(true);
+          }
+        });
+    } else {
+      setError(true);
+    }
   };
   return (
     <div>
@@ -67,7 +71,11 @@ const Groups = () => {
                 style={{ width: "inherit" }}
               />
               <button disabled={loading} onClick={joinCode} className="button">
-                {loading ? LoaderIcon : "Join"}
+                {loading ? (
+                  <div style={{ marginLeft: "-5px" }}>{LoaderIcon}</div>
+                ) : (
+                  "Join"
+                )}
               </button>
             </div>
             {error && <p className="error">Invalid code</p>}

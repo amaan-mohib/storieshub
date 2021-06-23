@@ -8,6 +8,7 @@ import { db, timestamp } from "../firebase";
 import Navbar from "./Navbar";
 import { Link } from "react-router-dom";
 import { genres } from "./Create";
+import { LoaderIcon } from "./Edit";
 
 const Join = () => {
   const { user } = useAuth();
@@ -219,17 +220,7 @@ const Card = ({ data }) => {
           style={{ justifyContent: "center" }}>
           <FeatherIcon icon="plus" />
           Join
-          {loading && (
-            <div
-              className="loader"
-              style={{
-                width: "15px",
-                height: "15px",
-                borderWidth: "3px",
-                marginLeft: "5px",
-              }}
-            />
-          )}
+          {loading && LoaderIcon}
         </button>
       ) : (
         <button
@@ -243,17 +234,7 @@ const Card = ({ data }) => {
           style={{ justifyContent: "center" }}>
           <FeatherIcon icon="plus" />
           Request join
-          {loading && (
-            <div
-              className="loader"
-              style={{
-                width: "15px",
-                height: "15px",
-                borderWidth: "3px",
-                marginLeft: "5px",
-              }}
-            />
-          )}
+          {loading && LoaderIcon}
         </button>
       )}
     </div>

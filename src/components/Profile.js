@@ -6,18 +6,26 @@ import Navbar from "./Navbar";
 import FeatherIcon from "feather-icons-react";
 import { useAuth } from "../contexts/AuthContext";
 import { genres } from "./Create";
+import ProfileProvider, { useProfile } from "../contexts/ProfileContext";
 
 const Profile = () => {
+  return (
+    <ProfileProvider>
+      <ProfileBody />
+    </ProfileProvider>
+  );
+};
+const ProfileBody = () => {
   const { uid } = useParams();
   const { user } = useAuth();
   const [data, setData] = useState({
     displayName: "Loading",
     email: "Loading",
-    photoURL: "Loading",
+    photoURL:
+      "https://www.searchpng.com/wp-content/uploads/2019/02/Men-Profile-Image-PNG.png",
   });
   const [error, setError] = useState(false);
-  const [books, setBooks] = useState([]);
-  const [published, setPublished] = useState([]);
+  const { drafts, setDrafts, published, setPublished } = useProfile();
   const [activeTab, setActiveTab] = useState(0);
   const activeClass = (index) => {
     return activeTab === index ? " tab-active" : "";
@@ -33,18 +41,34 @@ const Profile = () => {
       .then((doc) => {
         if (doc.exists) {
           setData(doc.data());
-          console.log(doc.data());
-          if (doc.data().books) {
-            setBooks(doc.data().books);
-          }
-          if (doc.data().published) {
-            console.log("in future");
-            setPublished(doc.data().published);
-          }
           if (!user || user.uid !== uid) setActiveTab(1);
         } else {
           setError(true);
         }
+      })
+      .catch((err) => console.error(err));
+    //Drafts
+    if (user && user.uid === uid) {
+      db.collection("books")
+        .where("uids", "array-contains", uid)
+        .get()
+        .then((querySnapshot) => {
+          const docs = querySnapshot.docs.map((doc) => doc.data());
+          setDrafts(
+            docs.sort((a, b) => b.updatedAt.toDate() - a.updatedAt.toDate())
+          );
+        })
+        .catch((err) => console.error(err));
+    }
+    //Published
+    db.collection("published")
+      .where("uids", "array-contains", uid)
+      .get()
+      .then((querySnapshot) => {
+        const docs = querySnapshot.docs.map((doc) => doc.data());
+        setPublished(
+          docs.sort((a, b) => b.updatedAt.toDate() - a.updatedAt.toDate())
+        );
       })
       .catch((err) => console.error(err));
   }, [uid, user]);
@@ -83,6 +107,24 @@ const Profile = () => {
                 }}>
                 {data.email}
               </p>
+              <p
+                style={{
+                  fontSize: "small",
+                  marginTop: "10px",
+                  color: "var(--secondary-text)",
+                }}>
+                {`${data.followers || 0} follower${
+                  data.followers > 1 ? "s" : ""
+                } • ${data.following || 0} following`}
+              </p>
+              <div>
+                <button
+                  style={{ marginTop: "10px" }}
+                  className="button secondary-but but-outline">
+                  <FeatherIcon icon="user-plus" />
+                  Follow
+                </button>
+              </div>
             </div>
             <hr />
             <div>
@@ -94,15 +136,15 @@ const Profile = () => {
                     color: "var(--secondary-text)",
                   }}>{`${published.length} published${
                   user && user.uid === uid
-                    ? ` • ${books.length} draft${
-                        books.length > 1 ? "s" : ""
+                    ? ` • ${drafts.length} draft${
+                        drafts.length > 1 ? "s" : ""
                       } (private)`
                     : ""
                 }`}</p>
               </div>
               <hr />
               {user && user.uid === uid && (
-                <div style={{ display: "flex", margin: "10px 0" }}>
+                <div style={{ display: "flex", margin: "15px 0" }}>
                   {tabs.map((tab, index) => (
                     <button
                       key={index}
@@ -121,7 +163,7 @@ const Profile = () => {
                   ))}
                 </div>
               )}
-              {activeTab === 0 ? <Books uid={uid} /> : <Published uid={uid} />}
+              {activeTab === 0 ? <Books /> : <Published />}
             </div>
           </div>
         )}
@@ -129,42 +171,33 @@ const Profile = () => {
     </div>
   );
 };
-const Books = ({ uid }) => {
-  const [books, setBooks] = useState([]);
-  useEffect(() => {
-    db.collection("books")
-      .where("uids", "array-contains", uid)
-      .get()
-      .then((querySnapshot) => {
-        const docs = querySnapshot.docs.map((doc) => doc.data());
-        setBooks(
-          docs.sort((a, b) => b.updatedAt.toDate() - a.updatedAt.toDate())
-        );
-      })
-      .catch((err) => console.error(err));
-  }, [uid]);
+const Books = () => {
+  const { drafts } = useProfile();
   return (
     <div style={{ marginTop: "5px" }}>
-      {books.length > 0 ? (
-        books.map((b) => (
+      {drafts.length > 0 ? (
+        drafts.map((b) => (
           <div className="feed" key={b.title}>
             <div className="feed-title">
               <div>
                 <Link className="feed-title-heading" to={`/edit/${b.id}`}>
                   <h2>{b.title}</h2>
                 </Link>
-                <p style={{ display: "inline-flex" }}>
+                <p style={{ display: "inline-flex", flexWrap: "wrap" }}>
                   {b.authors.map((a, index) => {
                     return (
-                      <Link
-                        key={index}
-                        className="feed-author comma"
-                        style={
-                          a.leader
-                            ? { fontWeight: "bold" }
-                            : { fontWeight: "normal" }
-                        }
-                        to={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
+                      <>
+                        <Link
+                          key={index}
+                          className="feed-author"
+                          style={
+                            a.leader
+                              ? { fontWeight: "bold" }
+                              : { fontWeight: "normal" }
+                          }
+                          to={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
+                        {index < b.authors.length - 1 ? <p>,&nbsp;</p> : ""}
+                      </>
                     );
                   })}
                 </p>
@@ -191,42 +224,36 @@ const Books = ({ uid }) => {
     </div>
   );
 };
-const Published = ({ uid }) => {
-  const [books, setBooks] = useState([]);
-  useEffect(() => {
-    db.collection("published")
-      .where("uids", "array-contains", uid)
-      .get()
-      .then((querySnapshot) => {
-        const docs = querySnapshot.docs.map((doc) => doc.data());
-        setBooks(
-          docs.sort((a, b) => b.updatedAt.toDate() - a.updatedAt.toDate())
-        );
-      })
-      .catch((err) => console.error(err));
-  }, [uid]);
+const Published = () => {
+  const { published } = useProfile();
   return (
     <div style={{ marginTop: "5px" }}>
-      {books.length > 0 ? (
-        books.map((b) => (
+      {published.length > 0 ? (
+        published.map((b) => (
           <div className="feed" key={b.title}>
             <div className="feed-title">
               <div>
                 <Link className="feed-title-heading" to={`/book/${b.id}`}>
                   <h2>{b.title}</h2>
                 </Link>
-                <p>
-                  {b.authors.map((a, index) => {
-                    return (
-                      <>
-                        <Link
-                          className="feed-author"
-                          style={a.leader && { fontWeight: "bold" }}
-                          to={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
-                        {index < b.authors.length - 1 ? ", " : ""}
-                      </>
-                    );
-                  })}
+                <p style={{ display: "inline-flex", flexWrap: "wrap" }}>
+                  {b.authors &&
+                    b.authors.map((a, index) => {
+                      return (
+                        <>
+                          <Link
+                            key={index}
+                            className="feed-author"
+                            style={
+                              a.leader
+                                ? { fontWeight: "bold" }
+                                : { fontWeight: "normal" }
+                            }
+                            to={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
+                          {index < b.authors.length - 1 ? <p>,&nbsp;</p> : ""}
+                        </>
+                      );
+                    })}
                 </p>
               </div>
             </div>
@@ -236,8 +263,8 @@ const Published = ({ uid }) => {
               <p>
                 <b>{genres[Number(b.genre)]}</b>
               </p>
-              {b.tags.map((k) => (
-                <p>{k}</p>
+              {b.tags.map((k, index) => (
+                <p key={index}>{k}</p>
               ))}
             </div>
             <div className="published">

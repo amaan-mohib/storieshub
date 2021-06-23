@@ -16,6 +16,9 @@ import short from "short-uuid";
 import { genres } from "./Create";
 import { isMobile } from "react-device-detect";
 import ClickAwayListener from "react-click-away-listener";
+import MessageMain from "./Message";
+import Prs from "./Prs";
+import PublishForm from "./PublishForm";
 
 const Edit = () => {
   const { user } = useAuth();
@@ -47,19 +50,45 @@ const Edit = () => {
         {error ? (
           <div className="main">No book with ID {id}</div>
         ) : (
-          Object.keys(data).length !== 0 && (
-            <>
-              <div className="create">
-                <TextEditor data={data} />
-              </div>
-              <div className="create-mob">
-                <Mobile data={data} />
-              </div>
-            </>
-          )
+          Object.keys(data).length !== 0 && <TopComp data={data} />
         )}
       </div>
     </PreviewProvider>
+  );
+};
+const TopComp = ({ data }) => {
+  const { setMessages, setRead } = usePreview();
+  const { id } = useParams();
+  const { user } = useAuth();
+  useEffect(() => {
+    let docRef = db.collection("messages").doc(id);
+    let msgRef = docRef.collection("messages");
+    docRef
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          let uid = user.uid;
+          doc.data()[uid] && setRead(doc.data()[uid]);
+        }
+      })
+      .catch((err) => console.error(err));
+    let unsub = msgRef.orderBy("date", "desc").onSnapshot((query) => {
+      const docs = query.docs.map((doc) => doc.data());
+      setMessages(docs);
+    });
+    return () => {
+      unsub && unsub();
+    };
+  }, []);
+  return (
+    <>
+      <div className="create">
+        <TextEditor data={data} />
+      </div>
+      <div className="create-mob">
+        <Mobile data={data} />
+      </div>
+    </>
   );
 };
 export const LoaderIcon = (
@@ -97,6 +126,7 @@ const TextEditor = ({ data }) => {
     setPrs,
     setRequested,
     setRequests,
+    setNsfw,
   } = usePreview();
   const { user } = useAuth();
   const previewRef = useRef(null);
@@ -104,9 +134,9 @@ const TextEditor = ({ data }) => {
   const [preview, setPreview] = useState(false);
   const [loading, setLoading] = useState(false);
   const [save, setSave] = useState(false);
-  const [publish, setPublish] = useState(false);
   const [update, setUpdate] = useState(new Date().toLocaleDateString());
   const [open, setOpen] = useState(false);
+  const [publishOpen, setPubOpen] = useState(false);
   const [editorState, setEditorState] = useState(() =>
     EditorState.createWithContent(convertFromHTML(body))
   );
@@ -140,22 +170,20 @@ const TextEditor = ({ data }) => {
       data.pr && setPrs(data.pr);
       data.requested && setRequested(data.requested);
       data.requests && setRequests(data.requests);
+      data.nsfw && setNsfw(data.nsfw);
       setEditorState((e) => EditorState.moveFocusToEnd(e));
       setRender(1);
     }
 
     return () => {
-      // saveBook();        Remember
+      if (data.leader === user.uid && !publishOpen && !validation()) {
+        saveBook();
+      }
     };
     // eslint-disable-next-line
   }, [data]);
   const validation = () => {
-    if (
-      title.trim() === "" ||
-      body.trim() === "" ||
-      body.trim() === "<p></p>" ||
-      body.trim() === "<p>&nbsp;</p>"
-    ) {
+    if (title.trim() === "" || body.replace(/<\/?[^>]+>/gi, "").trim() === "") {
       setError(true);
       return true;
     } else {
@@ -251,12 +279,44 @@ const TextEditor = ({ data }) => {
               </ClickAwayListener>
             </div>
           )}
+          {publishOpen && (
+            <div className="dialog-bg">
+              <ClickAwayListener onClickAway={() => setPubOpen(false)}>
+                <div>
+                  <PublishForm
+                    data={data}
+                    close1={
+                      <div
+                        className="icon-button"
+                        onClick={() => setPubOpen(false)}>
+                        <FeatherIcon icon="x" />
+                      </div>
+                    }
+                    close2={
+                      <button
+                        className="button secondary-but"
+                        onClick={() => setPubOpen(false)}>
+                        Close
+                      </button>
+                    }
+                  />
+                </div>
+              </ClickAwayListener>
+            </div>
+          )}
           <div className="feed sticky1" style={{ margin: 0 }}>
             <div className="footer">
               {book.leader === user.uid && (
-                <button className="button" style={{ marginRight: "10px" }}>
+                <button
+                  className="button"
+                  style={{ marginRight: "10px" }}
+                  onClick={() => {
+                    if (!validation()) {
+                      saveBook();
+                      setPubOpen(true);
+                    }
+                  }}>
                   Publish
-                  {loading && publish && LoaderIcon}
                 </button>
               )}
               {book.leader === user.uid ? (
@@ -449,7 +509,7 @@ const MobileEditor = () => {
     </div>
   );
 };
-const createMarkup = (html) => {
+export const createMarkup = (html) => {
   return {
     __html: DOMPurify.sanitize(html),
   };
@@ -471,6 +531,7 @@ const Preview = () => {
 };
 const Sidebar = () => {
   const [tab, setTab] = useState(0);
+  const { read, messages } = usePreview();
   const tabs = [
     { icon: "users", title: "Team" },
     { icon: "message-circle", title: "Message" },
@@ -493,6 +554,9 @@ const Sidebar = () => {
                 activeClass(index) === " tab-active" ? "tab-active-icon" : ""
               }`}
             />
+            {messages.length - read !== 0 && index === 1 && (
+              <p className="badge">{Number(messages.length) - Number(read)}</p>
+            )}
           </button>
         ))}
       </div>
@@ -508,7 +572,8 @@ const Accordion = ({ title, component, isOpen = false, notification = 0 }) => {
     <div className="accordion members">
       <div className="accordion-title" onClick={() => setOpen(!open)}>
         <h3 className="heading-h3">
-          {title} {notification !== 0 && ` (${notification})`}
+          {title}
+          {notification !== 0 && <p className="badge">{notification}</p>}
         </h3>
         <div className="icon-button">
           <FeatherIcon icon={open ? "chevron-up" : "chevron-down"} />
@@ -859,114 +924,9 @@ const Requests = () => {
     <p>No Join Requests</p>
   );
 };
-const Prs = () => {
-  const [prs, setPrs] = useState([]);
-  const [copied, setCopied] = useState(false);
-  const [pr, setPr] = useState({
-    id: "loading",
-    body: "loading",
-    title: "loading",
-  });
-  const [open, setOpen] = useState(false);
-  const { id } = useParams();
-  useEffect(() => {
-    let docRef = db.collection("books").doc(id).collection("prs");
-    let unsub = docRef.orderBy("updatedAt", "desc").onSnapshot((query) => {
-      const docs = query.docs.map((doc) => doc.data());
-      setPrs(docs);
-    });
-    return () => {
-      unsub && unsub();
-    };
-  }, [id]);
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleOpen = () => {
-    setOpen(true);
-  };
-  const copy = () => {
-    if (navigator.clipboard) {
-      navigator.clipboard
-        .writeText(pr.body.replace(/<\/?[^>]+>/gi, ""))
-        .then(() => {
-          setCopied(true);
-        });
-      setTimeout(() => {
-        setCopied(false);
-      }, 1000);
-    }
-  };
-  return prs.length > 0 ? (
-    <div>
-      <ul className="prs-ul">
-        {prs.map((pr) => (
-          <li
-            key={pr.prId}
-            className="prs team-members"
-            onClick={() => {
-              handleOpen();
-              setPr(pr);
-            }}>
-            <p className="pr-title">{pr.title}</p>
-            <p
-              style={{
-                fontSize: "x-small",
-                color: "var(--secondary-text)",
-              }}>{`By ${pr.author.displayName} at ${
-              pr.updatedAt && pr.updatedAt.toDate().toLocaleDateString()
-            }`}</p>
-            <p className="pr-desc">{pr.synopsis}</p>
-          </li>
-        ))}
-        {open && (
-          <div className="dialog-bg">
-            <ClickAwayListener onClickAway={handleClose}>
-              <div className="dialog">
-                <div className="dialog-title">
-                  <h1>{`${pr.title}`}</h1>
-                  <div className="icon-button" onClick={() => handleClose()}>
-                    <FeatherIcon icon="x" />
-                  </div>
-                </div>
-                <hr />
-                <div
-                  className="dialog-body"
-                  dangerouslySetInnerHTML={createMarkup(pr.body)}></div>
-                <hr />
-                <div className="dialog-actions">
-                  <div>
-                    <button
-                      className="button secondary-but but-outline"
-                      onClick={copy}>
-                      Copy{" "}
-                      {copied && (
-                        <FeatherIcon
-                          icon="check"
-                          style={{ margin: "0 0 0 5px" }}
-                        />
-                      )}
-                    </button>
-                    <button
-                      className="button secondary-but"
-                      onClick={handleClose}>
-                      Close
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </ClickAwayListener>
-          </div>
-        )}
-      </ul>
-    </div>
-  ) : (
-    <p>No Submit Requests</p>
-  );
-};
 
 const Message = () => {
-  return <div></div>;
+  return <MessageMain />;
 };
 const SidebarContent = () => {
   const { prs, book, requests } = usePreview();
@@ -991,6 +951,7 @@ const SidebarContent = () => {
 };
 const Mobile = ({ data }) => {
   const [tab, setTab] = useState(0);
+  const { messages, read } = usePreview();
   const tabs = [
     { icon: "book", title: "Edit" },
     { icon: "users", title: "Team" },
@@ -1015,6 +976,9 @@ const Mobile = ({ data }) => {
                 activeClass(index) === " tab-active" ? "tab-active-icon" : ""
               }`}
             />
+            {messages.length - read !== 0 && index === 2 && (
+              <p className="badge">{Number(messages.length) - Number(read)}</p>
+            )}
           </button>
         ))}
       </div>
