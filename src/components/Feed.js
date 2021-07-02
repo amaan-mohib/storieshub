@@ -52,7 +52,7 @@ const Feed = (props) => {
                   <>
                     <Link
                       className="feed-author"
-                      to={`/${a.id}`}>{`${a.name}`}</Link>
+                      to={`/${a.id}`}>{`${a.displayName}`}</Link>
                     {index < props.data.authors.length - 1 ? ", " : ""}
                   </>
                 );
@@ -61,14 +61,15 @@ const Feed = (props) => {
         </div>
         {user && (
           <div className="likes">
-            <FeatherIcon
-              icon="heart"
+            <div
+              className="icon-button"
               onClick={() => {
                 setLike(!like);
                 like ? likeRemove() : likeAdd();
               }}
-              fill={like ? "red" : "none"}
-            />
+              style={{ marginRight: "5px" }}>
+              <FeatherIcon icon="heart" fill={like ? "red" : "none"} />
+            </div>
             <p>{0 || likes}</p>
           </div>
         )}

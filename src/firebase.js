@@ -1,16 +1,8 @@
+import { firebaseConfig } from "./config";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
 const firebaseui = require("firebaseui");
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBbVJtps_gIU88oCIdA3k-qujSGbC4iPhE",
-  authDomain: "storieshub.firebaseapp.com",
-  projectId: "storieshub",
-  storageBucket: "storieshub.appspot.com",
-  messagingSenderId: "465909431732",
-  appId: "1:465909431732:web:e429b65f695e9a46f6c6e1",
-};
 
 const app = firebase.initializeApp(firebaseConfig);
 

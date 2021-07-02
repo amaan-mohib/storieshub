@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import AuthProvider from "./contexts/AuthContext";
 import Login from "./components/Login";
@@ -11,8 +11,20 @@ import Browse from "./components/Browse";
 import Profile from "./components/Profile";
 import EasterEgg from "./components/EasterEgg";
 import Join, { JoinRequest } from "./components/Join";
+import Book from "./components/Book";
+import Settings, { darkObj } from "./components/Settings";
 
 function App() {
+  useEffect(() => {
+    const ls = localStorage.getItem("darkTheme");
+    if (ls === "dark") {
+      Object.keys(darkObj).map((key) => {
+        const value = darkObj[key];
+        document.documentElement.style.setProperty(key, value);
+        return 0;
+      });
+    }
+  }, []);
   return (
     <Router>
       <AuthProvider>
@@ -25,6 +37,8 @@ function App() {
           <Route path="/profile/:uid" component={Profile} />
           <Route path="/join/:id/:uuid" component={Join} />
           <Route path="/join/:id" exact component={JoinRequest} />
+          <Route path="/book/:id" exact component={Book} />
+          <PrivateRoute path="/settings" component={Settings} />
           <PrivateRoute path="/create" component={Create} />
           <PrivateRoute path="/edit/:id" component={Edit} />
         </Switch>

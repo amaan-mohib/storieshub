@@ -43,6 +43,11 @@ const Navbar = () => {
               />
               <hr />
               <DropDownItem
+                icon={<FeatherIcon icon="settings" />}
+                primary="Settings"
+                link="/settings"
+              />
+              <DropDownItem
                 icon={<FeatherIcon icon="user-plus" />}
                 primary="Change account"
                 link="/login"

@@ -1,5 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&display=swap");
+/* :root {
+  --nav-height: 60px;
+  --full-height: calc(100vh - var(--nav-height));
+  --background: hsl(0, 2%, 7%);
+  --nav-background: hsl(0, 2%, 10%);
+  --nav-background-blur: hsla(0, 2%, 10%, 0.75);
+  --shadow: rgba(0, 0, 0, 0.6);
+  --text-color: white;
+  --secondary-text: rgba(255, 255, 255, 0.6);
+  --hr: rgba(230, 230, 230, 0.12);
+  --textfield: rgb(34, 34, 34);
+  --active: rgba(255, 255, 255, 0.2);
+  --hover: rgba(255, 255, 255, 0.068);
+} */
 :root {
   --nav-height: 60px;
   --full-height: calc(100vh - var(--nav-height));
@@ -156,7 +170,7 @@ hr {
   align-items: center;
 }
 .login {
-  background-color: hsl(0, 0%, 95%);
+  background-color: var(--nav-background);
   display: flex;
   flex-direction: column;
   text-align: center;
@@ -292,10 +306,6 @@ hr {
   justify-content: flex-start;
   user-select: none;
 }
-.likes svg {
-  margin-right: 10px;
-  cursor: pointer;
-}
 .keywords {
   display: flex;
   padding: 5px 0;
@@ -360,6 +370,8 @@ hr {
   max-width: 100%;
 }
 .textfield {
+  background-color: var(--textfield);
+  color: var(--text-color);
   padding: 10px;
   margin-right: 10px;
   border-radius: 5px;
@@ -482,6 +494,9 @@ select {
 .rdw-dropdown-optionwrapper {
   overflow-y: auto !important;
 }
+.rdw-dropdown-wrapper {
+  color: black;
+}
 .editor-class * {
   font-family: "PT Serif", serif !important;
 }
@@ -505,8 +520,11 @@ select {
   flex-direction: column;
   text-align: center;
 }
-.preview * {
+.preview > * {
   margin: 10px 0;
+  font-family: "PT Serif", serif !important;
+}
+.preview-body * {
   font-family: "PT Serif", serif !important;
 }
 .sticky {
@@ -826,14 +844,6 @@ select {
   text-decoration: underline;
 }
 @media (hover: hover) and (pointer: fine) {
-  .icon-button:hover {
-    background-color: rgba(0, 0, 0, 0.068);
-  }
-
-  .prs:hover {
-    background-color: var(--hover);
-  }
-
   .textfield:hover,
   select:hover {
     border: 1px solid black;
@@ -841,8 +851,10 @@ select {
   .dropdown-item:hover,
   .button:hover,
   .toggleDiv:hover,
+  .icon-button:hover,
+  .prs:hover,
   .fab:hover {
-    background-color: rgba(0, 0, 0, 0.068);
+    background-color: var(--hover);
   }
   .button:disabled:hover {
     background-color: var(--background);
