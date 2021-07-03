@@ -8,11 +8,14 @@ const Feed = (props) => {
   const [like, setLike] = useState(false);
   const [likes, setLikes] = useState(0);
   const { user } = useAuth();
+  const [allowed, setAllowed] = useState(false);
   useEffect(() => {
     if (props.data.likes) {
       setLikes(props.data.likes.length);
       if (props.data.likes.includes(user.uid)) setLike(true);
     }
+    const ls2 = localStorage.getItem("adult");
+    if (ls2 === "true") setAllowed(true);
   }, []);
   const likeAdd = () => {
     setLikes(likes + 1);
@@ -40,6 +43,18 @@ const Feed = (props) => {
   };
   return (
     <div className="feed">
+      {props.data.nsfw && !allowed && (
+        <div className="cover">
+          <FeatherIcon icon="eye-off" />
+          <p>This story contains strong language</p>
+          <button
+            style={{ marginTop: "15px" }}
+            onClick={() => setAllowed(true)}
+            className="button secondary-but but-outline">
+            Continue
+          </button>
+        </div>
+      )}
       <div className="feed-title">
         <div>
           <Link className="feed-title-heading" to={`/book/${props.data.id}`}>

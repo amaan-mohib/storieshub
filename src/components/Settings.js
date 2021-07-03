@@ -29,11 +29,13 @@ export const darkObj = {
 };
 const Settings = () => {
   const [dark, setDark] = useState(false);
-  const [nsfw, setNsfw] = useState(true);
+  const [nsfw, setNsfw] = useState(false);
 
   useEffect(() => {
     const ls = localStorage.getItem("darkTheme");
+    const ls2 = localStorage.getItem("adult");
     if (ls === "dark") setDark(true);
+    if (ls2 === "true") setNsfw(true);
   }, []);
   const applyTheme = () => {
     const theme = dark ? light : darkObj;
@@ -82,7 +84,10 @@ const Settings = () => {
             <li
               className="dropdown-item"
               style={{ justifyContent: "space-between" }}
-              onClick={() => setNsfw(!nsfw)}>
+              onClick={() => {
+                setNsfw(!nsfw);
+                localStorage.setItem("adult", !nsfw ? "true" : "false");
+              }}>
               <div
                 style={{
                   display: "flex",
@@ -99,7 +104,13 @@ const Settings = () => {
                   </p>
                 </div>
               </div>
-              <ToggleButton value={nsfw} onToggle={() => setNsfw(!nsfw)} />
+              <ToggleButton
+                value={nsfw}
+                onToggle={() => {
+                  setNsfw(!nsfw);
+                  localStorage.setItem("adult", !nsfw ? "true" : "false");
+                }}
+              />
             </li>
             <li>
               <a

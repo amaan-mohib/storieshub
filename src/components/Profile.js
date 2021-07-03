@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { db } from "../firebase";
+import { db, timestamp } from "../firebase";
 import Navbar from "./Navbar";
 import FeatherIcon from "feather-icons-react";
 import { useAuth } from "../contexts/AuthContext";
 import { genres } from "./Create";
 import ProfileProvider, { useProfile } from "../contexts/ProfileContext";
+import ClickAwayListener from "react-click-away-listener";
 
 const Profile = () => {
   return (
@@ -15,6 +16,7 @@ const Profile = () => {
     </ProfileProvider>
   );
 };
+
 const ProfileBody = () => {
   const { uid } = useParams();
   const { user } = useAuth();
@@ -23,10 +25,14 @@ const ProfileBody = () => {
     email: "Loading",
     photoURL:
       "https://www.searchpng.com/wp-content/uploads/2019/02/Men-Profile-Image-PNG.png",
+    followers: [],
+    following: [],
   });
+  const [followed, setFollowed] = useState(false);
   const [error, setError] = useState(false);
   const { drafts, setDrafts, published, setPublished } = useProfile();
   const [activeTab, setActiveTab] = useState(0);
+  const [open, setOpen] = useState(false);
   const activeClass = (index) => {
     return activeTab === index ? " tab-active" : "";
   };
@@ -42,6 +48,9 @@ const ProfileBody = () => {
         if (doc.exists) {
           setData(doc.data());
           if (!user || user.uid !== uid) setActiveTab(1);
+          if (doc.data().followers && doc.data().followers.includes(user.uid)) {
+            setFollowed(true);
+          }
         } else {
           setError(true);
         }
@@ -72,6 +81,105 @@ const ProfileBody = () => {
       })
       .catch((err) => console.error(err));
   }, [uid, user]);
+  const followSate = () => {
+    setFollowed(true);
+    follow();
+  };
+  const follow = () => {
+    db.collection("users")
+      .doc(uid)
+      .set(
+        {
+          followers: timestamp.arrayUnion(user.uid),
+        },
+        { merge: true }
+      )
+      .then(() => {
+        let docRef = db
+          .collection("users")
+          .doc(uid)
+          .collection("followers")
+          .doc(user.uid);
+        docRef
+          .set({
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            uid: user.uid,
+          })
+          .then(() => {
+            db.collection("users")
+              .doc(user.uid)
+              .set(
+                {
+                  following: timestamp.arrayUnion(uid),
+                },
+                { merge: true }
+              )
+              .then(() => {
+                let docRef = db
+                  .collection("users")
+                  .doc(user.uid)
+                  .collection("following")
+                  .doc(uid);
+                docRef
+                  .set({
+                    displayName: data.displayName,
+                    photoURL: data.photoURL,
+                    uid: uid,
+                  })
+                  .catch((err) => console.error(err));
+              });
+          })
+          .catch((err) => console.error(err));
+      });
+  };
+  const unfollow = () => {
+    db.collection("users")
+      .doc(uid)
+      .set(
+        {
+          followers: timestamp.arrayRemove(user.uid),
+        },
+        { merge: true }
+      )
+      .then(() => {
+        let docRef = db
+          .collection("users")
+          .doc(uid)
+          .collection("followers")
+          .doc(user.uid);
+        docRef
+          .delete()
+          .then(() => {
+            db.collection("users")
+              .doc(user.uid)
+              .set(
+                {
+                  following: timestamp.arrayRemove(uid),
+                },
+                { merge: true }
+              )
+              .then(() => {
+                let docRef = db
+                  .collection("users")
+                  .doc(user.uid)
+                  .collection("following")
+                  .doc(uid);
+                docRef.delete().catch((err) => console.error(err));
+              });
+          })
+          .catch((err) => console.error(err));
+      });
+  };
+  const unfollowSate = () => {
+    setFollowed(false);
+    unfollow();
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <div>
       <Navbar />
@@ -112,19 +220,48 @@ const ProfileBody = () => {
                   fontSize: "small",
                   marginTop: "10px",
                   color: "var(--secondary-text)",
-                }}>
-                {`${data.followers || 0} follower${
-                  data.followers > 1 ? "s" : ""
-                } • ${data.following || 0} following`}
+                }}
+                className="p-follow"
+                onClick={() => setOpen(true)}>
+                {`${data.followers ? data.followers.length : 0} follower${
+                  data.followers && data.followers.length > 1 ? "s" : ""
+                } • ${data.following ? data.following.length : 0} following`}
               </p>
-              <div>
-                <button
-                  style={{ marginTop: "10px" }}
-                  className="button secondary-but but-outline">
-                  <FeatherIcon icon="user-plus" />
-                  Follow
-                </button>
-              </div>
+              {open && (
+                <div className="dialog-bg">
+                  <ClickAwayListener onClickAway={handleClose}>
+                    <div>
+                      <FollowDialog
+                        close1={
+                          <div className="icon-button" onClick={handleClose}>
+                            <FeatherIcon icon="x" />
+                          </div>
+                        }
+                        close2={
+                          <button
+                            className="button secondary-but"
+                            onClick={handleClose}>
+                            Close
+                          </button>
+                        }
+                      />
+                    </div>
+                  </ClickAwayListener>
+                </div>
+              )}
+              {user && user.uid !== uid && (
+                <div>
+                  <button
+                    onClick={() => {
+                      followed ? unfollowSate() : followSate();
+                    }}
+                    style={{ marginTop: "10px" }}
+                    className="button secondary-but but-outline">
+                    <FeatherIcon icon={followed ? "user-x" : "user-plus"} />
+                    {followed ? "Unfollow" : "Follow"}
+                  </button>
+                </div>
+              )}
             </div>
             <hr />
             <div>
@@ -275,6 +412,214 @@ const Published = () => {
       ) : (
         <p>No stories published</p>
       )}
+    </div>
+  );
+};
+const FollowDialog = ({ close1, close2 }) => {
+  const { uid } = useParams();
+  const { user } = useAuth();
+  const [tab, setTab] = useState(0);
+  const [data, setData] = useState([]);
+  const [followed, setFollowed] = useState(true);
+  useEffect(() => {
+    db.collection("users")
+      .doc(user.uid)
+      .get()
+      .then((doc) => {
+        doc.data().followers &&
+          doc.data().followers.includes(user.uid) &&
+          setFollowed(true);
+        getFollowers();
+      });
+  }, []);
+  const getFollowers = () => {
+    db.collection("users")
+      .doc(uid)
+      .collection("followers")
+      .get()
+      .then((doc) => {
+        const docs = doc.docs.map((doc) => doc.data());
+        setData(docs);
+      });
+  };
+  const getFollowing = () => {
+    db.collection("users")
+      .doc(uid)
+      .collection("following")
+      .get()
+      .then((doc) => {
+        const docs = doc.docs.map((doc) => doc.data());
+        setData(docs);
+      });
+  };
+  const follow = () => {
+    db.collection("users")
+      .doc(uid)
+      .set(
+        {
+          followers: timestamp.arrayUnion(user.uid),
+        },
+        { merge: true }
+      )
+      .then(() => {
+        let docRef = db
+          .collection("users")
+          .doc(uid)
+          .collection("followers")
+          .doc(user.uid);
+        docRef
+          .set({
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            uid: user.uid,
+          })
+          .then(() => {
+            db.collection("users")
+              .doc(user.uid)
+              .set(
+                {
+                  following: timestamp.arrayUnion(uid),
+                },
+                { merge: true }
+              )
+              .then(() => {
+                let docRef = db
+                  .collection("users")
+                  .doc(user.uid)
+                  .collection("following")
+                  .doc(uid);
+                docRef
+                  .set({
+                    displayName: data.displayName,
+                    photoURL: data.photoURL,
+                    uid: uid,
+                  })
+                  .catch((err) => console.error(err));
+              });
+          })
+          .catch((err) => console.error(err));
+      });
+  };
+  const unfollow = () => {
+    db.collection("users")
+      .doc(uid)
+      .set(
+        {
+          followers: timestamp.arrayRemove(user.uid),
+        },
+        { merge: true }
+      )
+      .then(() => {
+        let docRef = db
+          .collection("users")
+          .doc(uid)
+          .collection("followers")
+          .doc(user.uid);
+        docRef
+          .delete()
+          .then(() => {
+            db.collection("users")
+              .doc(user.uid)
+              .set(
+                {
+                  following: timestamp.arrayRemove(uid),
+                },
+                { merge: true }
+              )
+              .then(() => {
+                let docRef = db
+                  .collection("users")
+                  .doc(user.uid)
+                  .collection("following")
+                  .doc(uid);
+                docRef.delete().catch((err) => console.error(err));
+              });
+          })
+          .catch((err) => console.error(err));
+      });
+  };
+  const followState = () => {
+    setFollowed(true);
+    follow();
+  };
+  const unfollowState = () => {
+    setFollowed(false);
+    unfollow();
+  };
+  return (
+    <div className="dialog">
+      <div className="dialog-title">
+        <h1>{tab === 0 ? "Followers" : "Following"}</h1>
+        {close1}
+      </div>
+      <hr />
+      <div className="dialog-body">
+        <div className="follow-head">
+          <p
+            className={`follow-tab${tab === 0 ? " follow-tab-hover" : ""}`}
+            onClick={() => {
+              setTab(0);
+              getFollowers();
+            }}>
+            Followers
+          </p>
+          <p
+            className={`follow-tab${tab === 1 ? " follow-tab-hover" : ""}`}
+            onClick={() => {
+              setTab(1);
+              getFollowing();
+            }}>
+            Following
+          </p>
+        </div>
+        <hr />
+        {data.length > 0 ? (
+          <ul style={{ listStyle: "none" }}>
+            {data.map((d) => (
+              <li key={d.uid} className="follow-list">
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                  }}>
+                  <img
+                    style={{
+                      width: "45px",
+                      height: "45px",
+                      marginRight: "10px",
+                    }}
+                    referrerPolicy="no-referrer"
+                    src={d.photoURL}
+                    alt={d.displayName}
+                    className="pfp"
+                  />
+                  {d.displayName}
+                </div>
+                {user.uid !== d.uid && (
+                  <div
+                    className="icon-button"
+                    onClick={() => {
+                      followed ? unfollowState() : followState();
+                    }}>
+                    <FeatherIcon icon={followed ? "user-x" : "user-plus"} />
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>
+            {tab === 0
+              ? "The user have 0 followers"
+              : "The user does not follow anyone"}
+          </p>
+        )}
+      </div>
+      <hr />
+      <div className="dialog-actions">
+        <div>{close2}</div>
+      </div>
     </div>
   );
 };
