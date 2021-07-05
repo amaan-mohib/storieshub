@@ -1,11 +1,16 @@
 import React, { useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
+import { appName } from "../config";
 import { useAuth } from "../contexts/AuthContext";
 import { firebaseUI } from "../firebase";
 
 const Login = () => {
   return (
     <div className="home">
+      <Helmet>
+        <title>{`${appName} - Login`}</title>
+      </Helmet>
       <SmallLogin />
     </div>
   );
@@ -26,7 +31,11 @@ export function SmallLogin() {
       </div>
       <div id="firebaseui-auth-container"></div>
       <div id="loader">Loading...</div>
-      {user && <Link to="/">&lt; Home</Link>}
+      {user && (
+        <Link to="/" className="visited">
+          &lt; Home
+        </Link>
+      )}
     </div>
   );
 }

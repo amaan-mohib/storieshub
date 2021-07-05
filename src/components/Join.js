@@ -9,6 +9,8 @@ import Navbar from "./Navbar";
 import { Link } from "react-router-dom";
 import { genres } from "./Create";
 import { LoaderIcon } from "./Edit";
+import { Helmet } from "react-helmet";
+import { appName } from "../config";
 
 const Join = () => {
   const { user } = useAuth();
@@ -23,7 +25,6 @@ function useQuery() {
 }
 const JoinBody = () => {
   const { id, uuid } = useParams();
-
   const [uid, setUid] = useState("");
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
@@ -46,6 +47,9 @@ const JoinBody = () => {
   }, [id, uuid]);
   return (
     <div>
+      <Helmet>
+        <title>{`${appName} - Join`}</title>
+      </Helmet>
       <Navbar />
       <div className="main">
         {data.joinID === uid && !error ? (
@@ -81,6 +85,9 @@ const JoinRequestBody = () => {
   }, [id]);
   return (
     <div>
+      <Helmet>
+        <title>{`${appName} - Join`}</title>
+      </Helmet>
       <Navbar />
       {Object.keys(data).length !== 0 && (
         <div className="main">

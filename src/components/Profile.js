@@ -8,6 +8,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { genres } from "./Create";
 import ProfileProvider, { useProfile } from "../contexts/ProfileContext";
 import ClickAwayListener from "react-click-away-listener";
+import { Helmet } from "react-helmet";
+import { appName } from "../config";
 
 const Profile = () => {
   return (
@@ -179,10 +181,12 @@ const ProfileBody = () => {
   const handleClose = () => {
     setOpen(false);
   };
-
   return (
     <div>
       <Navbar />
+      <Helmet>
+        <title>{`${data.displayName} - ${appName}`}</title>
+      </Helmet>
       <div className="main">
         {error ? (
           <div className="home-nav">
@@ -222,7 +226,9 @@ const ProfileBody = () => {
                   color: "var(--secondary-text)",
                 }}
                 className="p-follow"
-                onClick={() => setOpen(true)}>
+                onClick={() => {
+                  if (user) setOpen(true);
+                }}>
                 {`${data.followers ? data.followers.length : 0} follower${
                   data.followers && data.followers.length > 1 ? "s" : ""
                 } • ${data.following ? data.following.length : 0} following`}

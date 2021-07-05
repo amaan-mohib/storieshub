@@ -6,11 +6,16 @@ import { Link, useHistory } from "react-router-dom";
 import FormProvider, { useForm } from "../contexts/CreateFormContext";
 import { db, timestamp } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
+import { appName } from "../config";
+import { Helmet } from "react-helmet";
 
 const Create = () => {
   return (
     <FormProvider>
       <div>
+        <Helmet>
+          <title>{`${appName} - Create`}</title>
+        </Helmet>
         <Navbar />
         <div className="main" style={{ flexDirection: "column" }}>
           <Title />

@@ -8,6 +8,8 @@ import { db } from "../firebase";
 import { genres } from "./Create";
 import short from "short-uuid";
 import { LoaderIcon } from "./Edit";
+import { Helmet } from "react-helmet";
+import { appName } from "../config";
 
 const Teams = () => {
   const { user } = useAuth();
@@ -56,6 +58,9 @@ const Groups = () => {
   };
   return (
     <div>
+      <Helmet>
+        <title>{`${appName} - Teams`}</title>
+      </Helmet>
       <Navbar />
       <div className="main">
         <div className="feeds ">

@@ -7,6 +7,8 @@ import Navbar from "./Navbar";
 import FeatherIcon from "feather-icons-react";
 import { db } from "../firebase";
 import { LoaderIcon } from "./Edit";
+import { Helmet } from "react-helmet";
+import { appName } from "../config";
 
 const Home = () => {
   const { user } = useAuth();
@@ -50,6 +52,9 @@ export const Feeds = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>{`${appName} - Home`}</title>
+      </Helmet>
       <Navbar />
       <div className="main">
         <div className="feeds">
@@ -106,6 +111,9 @@ export const Feeds = () => {
 export function NotSignedIn() {
   return (
     <div className="home">
+      <Helmet>
+        <title>{`${appName} - Login`}</title>
+      </Helmet>
       <div className="landing">
         <div>
           <h1 style={{ fontSize: "3rem" }}>StoriesHub</h1>
@@ -113,7 +121,9 @@ export function NotSignedIn() {
             Create and share stories with a team or individually.
           </p>
           <p style={{ marginTop: "10px" }}>
-            <Link to="/browse">Browse &gt;</Link>
+            <Link to="/browse" className="visited">
+              Browse &gt;
+            </Link>
           </p>
         </div>
         <div>

@@ -19,6 +19,8 @@ import ClickAwayListener from "react-click-away-listener";
 import MessageMain from "./Message";
 import Prs from "./Prs";
 import PublishForm from "./PublishForm";
+import { Helmet } from "react-helmet";
+import { appName } from "../config";
 
 const Edit = () => {
   const { user } = useAuth();
@@ -46,6 +48,9 @@ const Edit = () => {
   return (
     <PreviewProvider>
       <div>
+        <Helmet>
+          <title>{`${appName} - Edit`}</title>
+        </Helmet>
         <Navbar />
         {error ? (
           <div className="main">No book with ID {id}</div>
@@ -733,6 +738,7 @@ const Members = () => {
           {!show && (
             <p>
               <a
+                className="visited"
                 style={{ fontSize: "x-small", marginTop: "10px" }}
                 href={`${process.env.PUBLIC_URL}/join/${id}/${shortId}?invite=true`}
                 target="_blank"

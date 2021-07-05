@@ -13,6 +13,7 @@ import EasterEgg from "./components/EasterEgg";
 import Join, { JoinRequest } from "./components/Join";
 import Book from "./components/Book";
 import Settings, { darkObj } from "./components/Settings";
+import NotFound from "./components/NotFound";
 
 function App() {
   useEffect(() => {
@@ -41,6 +42,7 @@ function App() {
           <PrivateRoute path="/settings" component={Settings} />
           <PrivateRoute path="/create" component={Create} />
           <PrivateRoute path="/edit/:id" component={Edit} />
+          <Route path="*" component={NotFound} />
         </Switch>
       </AuthProvider>
     </Router>

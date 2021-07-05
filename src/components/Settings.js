@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import FeatherIcon from "feather-icons-react";
 import ToggleButton from "react-toggle-button";
+import { Helmet } from "react-helmet";
+import { appName } from "../config";
+import ClickAwayListener from "react-click-away-listener";
 
 export const light = {
   "--background": "hsl(43, 100%, 95%)",
@@ -30,7 +33,7 @@ export const darkObj = {
 const Settings = () => {
   const [dark, setDark] = useState(false);
   const [nsfw, setNsfw] = useState(false);
-
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     const ls = localStorage.getItem("darkTheme");
     const ls2 = localStorage.getItem("adult");
@@ -46,10 +49,63 @@ const Settings = () => {
     });
     localStorage.setItem("darkTheme", !dark ? "dark" : "light");
   };
+  const handleClose = () => setOpen(false);
   return (
     <div>
+      <Helmet>
+        <title>{`${appName} - Settings`}</title>
+      </Helmet>
       <Navbar />
       <div className="main">
+        {open && (
+          <div className="dialog-bg">
+            <ClickAwayListener onClickAway={handleClose}>
+              <div className="dialog">
+                <div className="dialog-title">
+                  <h1>About</h1>
+                  <div onClick={handleClose} className="icon-button">
+                    <FeatherIcon icon="x" />
+                  </div>
+                </div>
+                <hr />
+                <div className="dialog-body">
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}>
+                    <img
+                      src="android-chrome-192x192.png"
+                      width="60px"
+                      alt={appName}
+                    />
+                    <h1>{appName}</h1>
+                    <a
+                      style={{ marginTop: "20px", fontSize: "small" }}
+                      className="visited"
+                      rel="noreferrer"
+                      target="_blank"
+                      href="https://github.com/amaan-mohib/storieshub">
+                      GitHub
+                    </a>
+                  </div>
+                </div>
+                <hr />
+                <div className="dialog-actions">
+                  <div>
+                    <button
+                      onClick={handleClose}
+                      className="button secondary-but">
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ClickAwayListener>
+          </div>
+        )}
         <div className="feed">
           <ul style={{ listStyle: "none" }} className="settings">
             <li
@@ -134,6 +190,7 @@ const Settings = () => {
             </li>
             <li
               className="dropdown-item"
+              onClick={() => setOpen(true)}
               style={{ justifyContent: "space-between" }}>
               <div
                 style={{

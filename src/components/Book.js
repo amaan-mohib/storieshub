@@ -5,6 +5,8 @@ import FeatherIcon from "feather-icons-react";
 import Navbar from "./Navbar";
 import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
+import { Helmet } from "react-helmet";
+import { appName } from "../config";
 
 const Book = () => {
   const { id } = useParams();
@@ -22,7 +24,7 @@ const Book = () => {
     docRef.get().then((doc) => {
       if (doc.exists) {
         setData(doc.data());
-        if (doc.data().likes.includes(user.uid)) setLike(true);
+        if (user && doc.data().likes.includes(user.uid)) setLike(true);
       } else setError(true);
     });
   }, []);
@@ -50,6 +52,11 @@ const Book = () => {
   };
   return (
     <div>
+      <Helmet>
+        <title>{`${data.title.replace(/\w\S*/g, (w) =>
+          w.replace(/^\w/, (c) => c.toUpperCase())
+        )} - ${appName}`}</title>
+      </Helmet>
       <Navbar />
       <div className="main">
         {error ? (
@@ -129,12 +136,12 @@ const Book = () => {
                             .share({
                               title: `${data.title.replace(/\w\S*/g, (w) =>
                                 w.replace(/^\w/, (c) => c.toUpperCase())
-                              )} - StoriesHub`,
+                              )} - ${appName}`,
                               text: `${
                                 user.displayName
                               } shared ${data.title.replace(/\w\S*/g, (w) =>
                                 w.replace(/^\w/, (c) => c.toUpperCase())
-                              )} - StoriesHub`,
+                              )} - ${appName}`,
                               url: `/book/${id}`,
                             })
                             .then(() => console.log("shared"))
