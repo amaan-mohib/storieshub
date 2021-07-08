@@ -20,7 +20,7 @@ import MessageMain from "./Message";
 import Prs from "./Prs";
 import PublishForm from "./PublishForm";
 import { Helmet } from "react-helmet";
-import { appName } from "../config";
+import { appName, webUrl } from "../config";
 
 const Edit = () => {
   const { user } = useAuth();
@@ -763,7 +763,7 @@ const Members = () => {
                 href={`${process.env.PUBLIC_URL}/join/${id}/${shortId}?invite=true`}
                 target="_blank"
                 rel="noopener noreferrer">
-                {`${process.env.PUBLIC_URL}/join/${id}/${shortId}?invite=true`}
+                {`${webUrl}/join/${id}/${shortId}?invite=true`}
               </a>
             </p>
           )}
