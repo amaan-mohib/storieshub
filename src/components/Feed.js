@@ -111,7 +111,7 @@ const Feed = (props) => {
         </div>
       </div>
       {open && (
-        <div className="dialog-bg">
+        <div className="dialog-bg" style={{ marginTop: "-5px", top: "50.7%" }}>
           <ClickAwayListener onClickAway={handleClose}>
             <div>
               <ReportDialog
@@ -136,7 +136,7 @@ const Feed = (props) => {
     </div>
   );
 };
-const ReportDialog = ({ close1, close2, data }) => {
+export const ReportDialog = ({ close1, close2, data }) => {
   const reports = [
     "It's spam",
     "Hate speech",
@@ -185,7 +185,9 @@ const ReportDialog = ({ close1, close2, data }) => {
       </div>
       <hr />
       <div className="dialog-body">
-        <p style={{ fontSize: "large" }}>Why are you reporting this story?</p>
+        <p style={{ fontSize: "large", textAlign: "left" }}>
+          Why are you reporting this story?
+        </p>
         <ul style={{ listStyle: "none" }}>
           {reports.map((r, index) => (
             <li key={`r-${index}`} className="report-list">
@@ -204,7 +206,7 @@ const ReportDialog = ({ close1, close2, data }) => {
           ))}
         </ul>
         {checkedReport.includes("Other") && (
-          <div>
+          <div style={{ textAlign: "left" }}>
             <input
               type="text"
               style={{ minWidth: "300px" }}

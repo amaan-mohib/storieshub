@@ -7,6 +7,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
 import { Helmet } from "react-helmet";
 import { appName } from "../config";
+import ClickAwayListener from "react-click-away-listener";
+import { ReportDialog } from "./Feed";
 
 const Book = () => {
   const { id } = useParams();
@@ -18,6 +20,7 @@ const Book = () => {
   });
   const [like, setLike] = useState(false);
   const [error, setError] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     let docRef = db.collection("published").doc(id);
@@ -28,6 +31,7 @@ const Book = () => {
       } else setError(true);
     });
   }, []);
+  const handleClose = () => setOpen(false);
   const likeAdd = () => {
     db.collection("published")
       .doc(id)
@@ -151,9 +155,37 @@ const Book = () => {
                       <FeatherIcon icon="share-2" />
                     </div>
                   </div>
-                  <div title="Report" className="icon-button">
+                  <div
+                    title="Report"
+                    className="icon-button"
+                    onClick={() => setOpen(true)}>
                     <FeatherIcon icon="flag" />
                   </div>
+                  {open && (
+                    <div className="dialog-bg">
+                      <ClickAwayListener onClickAway={handleClose}>
+                        <div>
+                          <ReportDialog
+                            data={data}
+                            close1={
+                              <div
+                                className="icon-button"
+                                onClick={handleClose}>
+                                <FeatherIcon icon="x" />
+                              </div>
+                            }
+                            close2={
+                              <button
+                                className="button secondary-but"
+                                onClick={handleClose}>
+                                Close
+                              </button>
+                            }
+                          />
+                        </div>
+                      </ClickAwayListener>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

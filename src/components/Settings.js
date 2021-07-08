@@ -58,7 +58,9 @@ const Settings = () => {
       <Navbar />
       <div className="main">
         {open && (
-          <div className="dialog-bg">
+          <div
+            className="dialog-bg"
+            style={{ marginTop: "-5px", top: "50.7%" }}>
             <ClickAwayListener onClickAway={handleClose}>
               <div className="dialog">
                 <div className="dialog-title">
@@ -151,10 +153,10 @@ const Settings = () => {
                   justifyContent: "center",
                 }}>
                 <span className="dropdown-icon">
-                  <b>18+</b>
+                  <FeatherIcon icon="shield" />
                 </span>
                 <div className="dropdown-text">
-                  <p className="dropdown-primary">Adult Content</p>
+                  <p className="dropdown-primary">Matured Content</p>
                   <p className="dropdown-secondary">
                     View adult content in your feed
                   </p>

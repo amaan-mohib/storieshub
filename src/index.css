@@ -691,7 +691,8 @@ select {
 .dialog-bg {
   position: fixed;
   left: 50%;
-  top: 50%;
+  top: 50.7%;
+  margin-top: -5px;
   transform: translate(-50%, -50%);
   width: 100vw;
   height: 100vh;
@@ -707,6 +708,7 @@ select {
   transform: translate(-50%, -50%);
   background-color: var(--background);
   padding: 10px;
+  max-width: 700px;
   width: 80vw;
   border: 1px solid var(--hr);
   border-radius: 0.5rem;
@@ -901,6 +903,18 @@ select {
 }
 .link:hover {
   text-decoration: underline;
+}
+.tos {
+  padding: 25px;
+  max-width: 700px;
+  width: 100%;
+}
+.tos > h2 {
+  margin: 20px 0;
+}
+.tos > ul {
+  margin: 15px 0;
+  padding-left: 40px;
 }
 @media (hover: hover) and (pointer: fine) {
   .textfield:hover,

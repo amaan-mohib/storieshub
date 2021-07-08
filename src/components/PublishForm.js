@@ -218,7 +218,7 @@ const PublishBody = ({ story, error }) => {
         </select>
       </div>
       <div className="toggleDiv" onClick={() => setNsfw(!nsfw)}>
-        <p style={{ fontSize: "small" }}>NSFW (18+)</p>
+        <p style={{ fontSize: "small" }}>Matured Content</p>
         <ToggleButton value={nsfw} onToggle={() => setNsfw(!nsfw)} />
       </div>
       {story}

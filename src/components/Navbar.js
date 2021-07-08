@@ -58,6 +58,23 @@ const Navbar = () => {
                 link="/logout"
                 onClick={() => logout()}
               />
+              <hr />
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "small",
+                  padding: "10px",
+                }}>
+                <Link to="/terms" style={{ color: "var(--secondary-text)" }}>
+                  Terms of Service
+                </Link>
+                &emsp;&nbsp;•&emsp;&nbsp;
+                <Link to="/policies" style={{ color: "var(--secondary-text)" }}>
+                  Privacy Policy
+                </Link>
+              </div>
             </DropDown>
           </NavItem>
         </div>

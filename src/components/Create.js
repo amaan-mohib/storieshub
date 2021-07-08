@@ -140,7 +140,7 @@ const Title = () => {
       />
       <Genres />
       <div className="toggleDiv" onClick={() => setNsfw(!nsfw)}>
-        <p style={{ fontSize: "small" }}>NSFW (18+)</p>
+        <p style={{ fontSize: "small" }}>Matured Content</p>
         <ToggleButton value={nsfw} onToggle={() => setNsfw(!nsfw)} />
       </div>
     </div>
@@ -161,7 +161,7 @@ const TagInput = () => {
     const trimmedInput = input.trim();
 
     if (
-      (key === "," || key === " ") &&
+      (key === "," || key === " " || key === "Enter") &&
       trimmedInput.length &&
       !tags.includes(trimmedInput)
     ) {

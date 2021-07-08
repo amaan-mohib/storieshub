@@ -14,6 +14,7 @@ import Join, { JoinRequest } from "./components/Join";
 import Book from "./components/Book";
 import Settings, { darkObj } from "./components/Settings";
 import NotFound from "./components/NotFound";
+import Tos, { Policy } from "./components/Tos";
 
 function App() {
   useEffect(() => {
@@ -39,6 +40,8 @@ function App() {
           <Route path="/join/:id/:uuid" component={Join} />
           <Route path="/join/:id" exact component={JoinRequest} />
           <Route path="/book/:id" exact component={Book} />
+          <Route path="/terms" exact component={Tos} />
+          <Route path="/policies" exact component={Policy} />
           <PrivateRoute path="/settings" component={Settings} />
           <PrivateRoute path="/create" component={Create} />
           <PrivateRoute path="/edit/:id" component={Edit} />

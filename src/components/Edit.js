@@ -727,9 +727,29 @@ const Members = () => {
               alt="profile"
               className="pfp nav-img"
             />
-            <Link to={`/profile/${a.id}`} className="feed-author">
+            <Link
+              to={`/profile/${a.id}`}
+              className="feed-author"
+              style={
+                a.leader ? { fontWeight: "bold" } : { fontWeight: "normal" }
+              }>
               {a.displayName}
             </Link>
+            {a.leader && (
+              <div
+                title="Leader"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                <FeatherIcon
+                  icon="award"
+                  size="15"
+                  style={{ marginLeft: "10px" }}
+                />
+              </div>
+            )}
           </li>
         ))}
       </ul>

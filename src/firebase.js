@@ -63,9 +63,9 @@ export function firebaseUI() {
       firebase.auth.GithubAuthProvider.PROVIDER_ID,
     ],
     // Terms of service url.
-    tosUrl: "<your-tos-url>",
+    tosUrl: "terms",
     // Privacy policy url.
-    privacyPolicyUrl: "<your-privacy-policy-url>",
+    privacyPolicyUrl: "policies",
   };
 
   let ui =
