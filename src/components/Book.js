@@ -105,7 +105,7 @@ const Book = () => {
               className="preview-body"
               dangerouslySetInnerHTML={createMarkup(data.body)}
               style={{ textAlign: "justify", fontSize: "large" }}></p>
-            {data.complete && <p>To be continued...</p>}
+            {!data.complete && <p>To be continued...</p>}
             <hr />
             {user && (
               <div>
