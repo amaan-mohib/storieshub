@@ -10,6 +10,7 @@ import ProfileProvider, { useProfile } from "../contexts/ProfileContext";
 import ClickAwayListener from "react-click-away-listener";
 import { Helmet } from "react-helmet";
 import { appName } from "../config";
+import { createMarkup } from "./Edit";
 
 const Profile = () => {
   return (
@@ -347,7 +348,9 @@ const Books = () => {
               </div>
             </div>
             <hr />
-            <div className="feed-body">{b.synopsis}</div>
+            <div
+              className="feed-body"
+              dangerouslySetInnerHTML={createMarkup(b.synopsis)}></div>
             <div className="keywords">
               <p>
                 <b>{genres[Number(b.genre)]}</b>
@@ -401,7 +404,9 @@ const Published = () => {
               </div>
             </div>
             <hr />
-            <div className="feed-body">{b.synopsis}</div>
+            <div
+              className="feed-body"
+              dangerouslySetInnerHTML={createMarkup(b.synopsis)}></div>
             <div className="keywords">
               <p>
                 <b>{genres[Number(b.genre)]}</b>

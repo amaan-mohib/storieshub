@@ -72,6 +72,7 @@ const PublishForm = ({ close1 = <div></div>, close2 = <div></div>, data }) => {
           tags: tags,
           nsfw: nsfw,
           authors: otherData,
+          likes: [],
           uids: data.uids,
           leader: data.leader,
           complete: complete,
