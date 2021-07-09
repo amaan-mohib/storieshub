@@ -76,7 +76,7 @@ const Book = () => {
                     <>
                       <Link
                         className="feed-author"
-                        to={`/${a.id}`}>{`${a.displayName}`}</Link>
+                        to={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
                       {index < data.authors.length - 1 ? ", " : ""}
                     </>
                   );

@@ -474,6 +474,7 @@ select {
 }
 .editor-class {
   padding: 5px;
+  overflow: unset !important;
 }
 .prs {
   margin: 5px 0;

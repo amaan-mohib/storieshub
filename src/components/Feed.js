@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
 import ClickAwayListener from "react-click-away-listener";
+import { genres } from "./Create";
+import { createMarkup } from "./Edit";
 
 const Feed = (props) => {
   const [like, setLike] = useState(false);
@@ -93,8 +95,13 @@ const Feed = (props) => {
         )}
       </div>
       <hr />
-      <div className="feed-body">{props.data.synopsis}</div>
+      <div
+        className="feed-body"
+        dangerouslySetInnerHTML={createMarkup(props.data.synopsis)}></div>
       <div className="keywords">
+        <p>
+          <b>{genres[Number(props.data.genre)]}</b>
+        </p>
         {props.data.tags.map((k) => (
           <p key={k}>{k}</p>
         ))}
