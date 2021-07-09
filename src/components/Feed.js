@@ -100,7 +100,11 @@ const Feed = (props) => {
         ))}
       </div>
       <div className="published">
-        {props.data.updatedAt.toDate().toLocaleDateString()}
+        {new Intl.DateTimeFormat(undefined, {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }).format(props.data.updatedAt.toDate())}
         <div style={{ display: "flex", alignItems: "center" }}>
           {props.data.nsfw && <div style={{ fontWeight: "bold" }}>18+</div>}
           <div

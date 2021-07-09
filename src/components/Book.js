@@ -82,27 +82,30 @@ const Book = () => {
                   );
                 })}
             </p>
-            <div
-              style={{
-                fontSize: "small",
-                color: "var(--secondary-text)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}>
-              <FeatherIcon
-                icon="heart"
-                fill="var(--secondary-text)"
-                size="15"
-                style={{ marginRight: "5px" }}
-              />
-              {0 || data.likes.length}
+            <div>
+              <div
+                style={{
+                  fontSize: "small",
+                  color: "var(--secondary-text)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                <FeatherIcon
+                  icon="heart"
+                  fill="var(--secondary-text)"
+                  size="15"
+                  style={{ marginRight: "5px" }}
+                />
+                {0 || data.likes.length}
+              </div>
             </div>
             <hr />
             <p
               className="preview-body"
               dangerouslySetInnerHTML={createMarkup(data.body)}
               style={{ textAlign: "justify", fontSize: "large" }}></p>
+            {data.complete && <p>To be continued...</p>}
             <hr />
             {user && (
               <div>

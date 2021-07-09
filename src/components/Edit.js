@@ -529,7 +529,8 @@ const Preview = () => {
         <hr />
         <p
           dangerouslySetInnerHTML={createMarkup(body + mobileBody)}
-          style={{ textAlign: "justify" }}></p>
+          style={{ textAlign: "justify" }}
+          className="preview-body"></p>
       </div>
     </div>
   );
