@@ -72,7 +72,7 @@ const Feed = (props) => {
                   <>
                     <Link
                       className="feed-author"
-                      to={`/${a.id}`}>{`${a.displayName}`}</Link>
+                      to={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
                     {index < props.data.authors.length - 1 ? ", " : ""}
                   </>
                 );
