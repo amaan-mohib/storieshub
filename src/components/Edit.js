@@ -148,11 +148,6 @@ const TextEditor = ({ data }) => {
   const handleEditorState = (state) => {
     setEditorState(state);
     setBody(draftToHtml(convertToRaw(editorState.getCurrentContent())));
-    editorRef.current.scrollIntoView({
-      behavior: "smooth",
-      inline: "end",
-      block: "end",
-    });
   };
   useEffect(() => {
     if (render === 0 && Object.keys(data).length !== 0) {
