@@ -6,7 +6,7 @@ import short from "short-uuid";
 import FeatherIcon from "feather-icons-react";
 import { db, timestamp } from "../firebase";
 import Navbar from "./Navbar";
-import { Link } from "react-router-dom";
+import Link from "./Link";
 import { genres } from "./Create";
 import { LoaderIcon } from "./Edit";
 import { Helmet } from "react-helmet";
@@ -200,7 +200,7 @@ const Card = ({ data }) => {
               />
               <Link
                 className="feed-author"
-                to={`/profile/${a.id}`}
+                href={`/profile/${a.id}`}
                 style={
                   a.leader ? { fontWeight: "bold" } : { fontWeight: "normal" }
                 }>

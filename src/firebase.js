@@ -2,76 +2,34 @@ import { firebaseConfig } from "./config";
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/firestore";
-const firebaseui = require("firebaseui");
+// const firebaseui = require("firebaseui");
 
-const app = firebase.initializeApp(firebaseConfig);
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
 
+const app = firebase;
 export const auth = app.auth();
 export const db = app.firestore();
 export const timestamp = firebase.firestore.FieldValue;
 
-export function firebaseUI() {
-  let uiConfig = {
-    callbacks: {
-      signInSuccessWithAuthResult: function (authResult, redirectUrl) {
-        // User successfully signed in.
-        // Return type determines whether we continue the redirect automatically
-        // or whether we leave that to developer to handle.
-        let user = authResult.user;
-        let db = app.firestore();
-        console.log(db);
-        let docRef = db.collection("users").doc(`${user.uid}`);
-        docRef
-          .get()
-          .then((doc) => {
-            if (!doc.exists) {
-              console.log("read");
-              docRef
-                .set(
-                  {
-                    uid: user.uid,
-                    displayName: user.displayName,
-                    photoURL: user.photoURL,
-                    email: user.email,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                  },
-                  { merge: true }
-                )
-                .then(() => {})
-                .catch((err) => console.error(err));
-            }
-          })
-          .catch((err) => console.error(err));
-
-        return true;
-      },
-      uiShown: function () {
-        // The widget is rendered.
-        // Hide the loader.
-        document.getElementById("loader").style.display = "none";
-      },
+export const firebaseUIConfig = {
+  signInFlow: "popup",
+  signInOptions: [
+    {
+      provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+      customParameters: { prompt: "select_account" },
     },
-    // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
-    signInFlow: "popup",
-    // signInSuccessUrl: "/",
-    signInOptions: [
-      // Leave the lines as is for the providers you want to offer your users.
-      {
-        provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        customParameters: { prompt: "select_account" },
-      },
-      firebase.auth.GithubAuthProvider.PROVIDER_ID,
-    ],
-    // Terms of service url.
-    tosUrl: "terms",
-    // Privacy policy url.
-    privacyPolicyUrl: "policies",
-  };
-
-  let ui =
-    firebaseui.auth.AuthUI.getInstance() ||
-    new firebaseui.auth.AuthUI(firebase.auth());
-  ui.start("#firebaseui-auth-container", uiConfig);
-}
+    firebase.auth.GithubAuthProvider.PROVIDER_ID,
+  ],
+  callbacks: {
+    // Avoid redirects after sign-in.
+    signInSuccessWithAuthResult: () => false,
+  },
+  // Terms of service url.
+  tosUrl: "/terms",
+  // Privacy policy url.
+  privacyPolicyUrl: "/policies",
+};
 
 export default app;

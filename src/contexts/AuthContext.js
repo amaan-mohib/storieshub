@@ -1,7 +1,7 @@
+import { useRouter } from "next/router";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { useHistory } from "react-router";
 import Loader from "../components/Loader";
-import { auth } from "../firebase";
+import { auth, db, timestamp } from "../firebase";
 
 const AuthContext = createContext();
 
@@ -12,12 +12,35 @@ export function useAuth() {
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState();
   const [loading, setLoading] = useState(true);
-  const history = useHistory();
+  const router = useRouter();
 
   useEffect(() => {
     let unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
       setLoading(false);
+      if (user) {
+        let docRef = db.collection("users").doc(`${user.uid}`);
+        docRef
+          .get()
+          .then((doc) => {
+            if (!doc.exists) {
+              console.log("read");
+              docRef
+                .set(
+                  {
+                    uid: user.uid,
+                    displayName: user.displayName,
+                    photoURL: user.photoURL,
+                    email: user.email,
+                    createdAt: timestamp.serverTimestamp(),
+                  },
+                  { merge: true }
+                )
+                .catch((err) => console.error(err));
+            }
+          })
+          .catch((err) => console.error(err));
+      }
     });
     return () => {
       unsubscribe && unsubscribe();
@@ -26,7 +49,7 @@ const AuthProvider = ({ children }) => {
 
   async function logout() {
     await auth.signOut();
-    history.replace("/");
+    router.replace("/");
   }
   const value = {
     user,

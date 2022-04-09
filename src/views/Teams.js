@@ -1,19 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory } from "../components/Link";
 import { useAuth } from "../contexts/AuthContext";
 import { NotSignedIn } from "./Home";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import FeatherIcon from "feather-icons-react";
 import { db } from "../firebase";
 import { genres } from "./Create";
 import short from "short-uuid";
 import { LoaderIcon } from "./Edit";
-import { Helmet } from "react-helmet";
-import { appName } from "../config";
+import SEO from "../components/Helmet";
+// import { Helmet } from "react-helmet";
+// import { appName } from "../config";
 
 const Teams = () => {
   const { user } = useAuth();
-  return user ? <Groups /> : <NotSignedIn />;
+  return (
+    <>
+      <SEO title="Teams" />
+      {user ? <Groups /> : <NotSignedIn />}
+    </>
+  );
 };
 
 const Groups = () => {
@@ -58,9 +64,9 @@ const Groups = () => {
   };
   return (
     <div>
-      <Helmet>
+      {/* <Helmet>
         <title>{`${appName} - Teams`}</title>
-      </Helmet>
+      </Helmet> */}
       <Navbar />
       <div className="main">
         <div className="feeds ">
@@ -99,7 +105,7 @@ const Groups = () => {
 const Team = ({ data, divKey }) => {
   return (
     <div key={divKey} className="feed team">
-      <Link className="feed-title-heading" to={`/join/${data.teamId}`}>
+      <Link className="feed-title-heading" href={`/join/${data.teamId}`}>
         <h2>{data.title}</h2>
       </Link>
       <p className="details">{`${data.members} member${
@@ -122,7 +128,7 @@ const Team = ({ data, divKey }) => {
               className="pfp nav-img"
             />
             <Link
-              to={`/profile/${data.leader.uid}`}
+              href={`/profile/${data.leader.uid}`}
               className="feed-author">{`${data.leader.displayName}`}</Link>
           </li>
         </ul>
@@ -137,7 +143,7 @@ const Team = ({ data, divKey }) => {
       </div>
       <hr />
       <Link
-        to={`/join/${data.teamId}`}
+        href={`/join/${data.teamId}`}
         className="button"
         style={{ justifyContent: "center" }}>
         <FeatherIcon icon="plus" />

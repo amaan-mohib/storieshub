@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "../components/Link";
 import { createMarkup } from "./Edit";
 import FeatherIcon from "feather-icons-react";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
 import { Helmet } from "react-helmet";
 import { appName } from "../config";
 import ClickAwayListener from "react-click-away-listener";
-import { ReportDialog } from "./Feed";
+import { ReportDialog } from "../components/Feed";
+import SEO from "../components/Helmet";
 
 const Book = () => {
   const { id } = useParams();
@@ -56,11 +57,11 @@ const Book = () => {
   };
   return (
     <div>
-      <Helmet>
-        <title>{`${data.title.replace(/\w\S*/g, (w) =>
+      <SEO
+        title={data.title.replace(/\w\S*/g, (w) =>
           w.replace(/^\w/, (c) => c.toUpperCase())
-        )} - ${appName}`}</title>
-      </Helmet>
+        )}
+      />
       <Navbar />
       <div className="main">
         {error ? (
@@ -76,7 +77,7 @@ const Book = () => {
                     <>
                       <Link
                         className="feed-author"
-                        to={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
+                        href={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
                       {index < data.authors.length - 1 ? ", " : ""}
                     </>
                   );

@@ -1,21 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import FeatherIcon from "feather-icons-react";
 import ToggleButton from "react-toggle-button";
-import { Link, useHistory } from "react-router-dom";
+import Link from "../components/Link";
 import FormProvider, { useForm } from "../contexts/CreateFormContext";
 import { db, timestamp } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
-import { appName } from "../config";
-import { Helmet } from "react-helmet";
+// import { appName } from "../config";
+// import { Helmet } from "react-helmet";
 
 const Create = () => {
   return (
     <FormProvider>
       <div>
-        <Helmet>
+        {/* <Helmet>
           <title>{`${appName} - Create`}</title>
-        </Helmet>
+        </Helmet> */}
         <Navbar />
         <div className="main" style={{ flexDirection: "column" }}>
           <Title />
@@ -27,7 +27,7 @@ const Create = () => {
 };
 const Footer = () => {
   const { title, tags, synopsis, genre, nsfw, error, setError } = useForm();
-  const history = useHistory();
+  // const history = useHistory();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const validation = () => {
@@ -44,7 +44,7 @@ const Footer = () => {
       {error && <div className="error">*Please fill the required fields</div>}
       <div className="footer">
         <Link
-          to="/"
+          href="/"
           className="button secondary-but"
           style={{ marginRight: "10px" }}>
           Cancel
@@ -86,7 +86,7 @@ const Footer = () => {
                     )
                     .then(() => {
                       setLoading(false);
-                      history.push(`/edit/${docRef.id}`);
+                      // history.push(`/edit/${docRef.id}`);
                       console.log("added book id to user");
                     })
                     .catch((err) => console.error(err));

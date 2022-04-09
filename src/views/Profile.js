@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useParams } from "./Link";
+import Link from "./Link";
 import { db, timestamp } from "../firebase";
 import Navbar from "./Navbar";
 import FeatherIcon from "feather-icons-react";
@@ -192,7 +192,7 @@ const ProfileBody = () => {
         {error ? (
           <div className="home-nav">
             <h2>No user found</h2>
-            <Link to="/" style={{ marginTop: "10px" }}>
+            <Link href="/" style={{ marginTop: "10px" }}>
               &lt; Home
             </Link>
           </div>
@@ -324,7 +324,7 @@ const Books = () => {
           <div className="feed" key={b.title}>
             <div className="feed-title">
               <div>
-                <Link className="feed-title-heading" to={`/edit/${b.id}`}>
+                <Link className="feed-title-heading" href={`/edit/${b.id}`}>
                   <h2>{b.title}</h2>
                 </Link>
                 <p style={{ display: "inline-flex", flexWrap: "wrap" }}>
@@ -339,7 +339,7 @@ const Books = () => {
                               ? { fontWeight: "bold" }
                               : { fontWeight: "normal" }
                           }
-                          to={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
+                          href={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
                         {index < b.authors.length - 1 ? <p>,&nbsp;</p> : ""}
                       </>
                     );
@@ -379,7 +379,7 @@ const Published = () => {
           <div className="feed" key={b.title}>
             <div className="feed-title">
               <div>
-                <Link className="feed-title-heading" to={`/book/${b.id}`}>
+                <Link className="feed-title-heading" href={`/book/${b.id}`}>
                   <h2>{b.title}</h2>
                 </Link>
                 <p style={{ display: "inline-flex", flexWrap: "wrap" }}>
@@ -395,7 +395,7 @@ const Published = () => {
                                 ? { fontWeight: "bold" }
                                 : { fontWeight: "normal" }
                             }
-                            to={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
+                            href={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
                           {index < b.authors.length - 1 ? <p>,&nbsp;</p> : ""}
                         </>
                       );

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams } from "./Link";
 import { usePreview } from "../contexts/PreviewContext";
 import ToggleButton from "react-toggle-button";
-import { genres } from "./Create";
-import { LoaderIcon } from "./Edit";
+import { genres } from "../views/Create";
+import { LoaderIcon } from "../views/Edit";
 import { db, timestamp } from "../firebase";
 import { ReactComponent as SVG } from "./undraw_Done_re_oak4.svg";
 

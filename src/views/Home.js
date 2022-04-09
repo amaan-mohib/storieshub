@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "../components/Link";
 import { useAuth } from "../contexts/AuthContext";
-import Feed from "./Feed";
+import Feed from "../components/Feed";
 import { SmallLogin } from "./Login";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import FeatherIcon from "feather-icons-react";
 import { db } from "../firebase";
 import { LoaderIcon } from "./Edit";
-import { Helmet } from "react-helmet";
-import { appName } from "../config";
+import SEO from "../components/Helmet";
 
 const Home = () => {
   const { user } = useAuth();
-  return user ? <Feeds /> : <NotSignedIn />;
+  return (
+    <>
+      <SEO />
+      {user ? <Feeds /> : <NotSignedIn />}
+    </>
+  );
 };
 
 export const Feeds = () => {
@@ -52,19 +56,16 @@ export const Feeds = () => {
 
   return (
     <div>
-      <Helmet>
-        <title>{`${appName} - Home`}</title>
-      </Helmet>
       <Navbar />
       <div className="main">
         <div className="feeds">
           {user && (
             <div className="feed top-buts">
-              <Link to="/create" className="button">
+              <Link href="/create" className="button">
                 <FeatherIcon icon="plus" />
                 <p>Create</p>
               </Link>
-              <Link to="/teams" className="button">
+              <Link href="/teams" className="button">
                 <FeatherIcon icon="users" />
                 <p>Join</p>
               </Link>
@@ -111,9 +112,9 @@ export const Feeds = () => {
 export function NotSignedIn() {
   return (
     <div className="home">
-      <Helmet>
+      {/* <Helmet>
         <title>{`${appName} - Login`}</title>
-      </Helmet>
+      </Helmet> */}
       <div className="landing">
         <div>
           <h1 style={{ fontSize: "3rem" }}>StoriesHub</h1>
@@ -121,8 +122,8 @@ export function NotSignedIn() {
             Create and share stories with a team or individually.
           </p>
           <p style={{ marginTop: "10px" }}>
-            <Link to="/browse" className="visited">
-              Browse &gt;
+            <Link href="/browse">
+              <a className="visited">Browse &gt;</a>
             </Link>
           </p>
         </div>

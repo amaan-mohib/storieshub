@@ -1,16 +1,15 @@
 import React, { useEffect } from "react";
-import { Helmet } from "react-helmet";
-import { Link } from "react-router-dom";
-import { appName } from "../config";
+import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import Link from "../components/Link";
 import { useAuth } from "../contexts/AuthContext";
-import { firebaseUI } from "../firebase";
+import { auth, firebaseUIConfig } from "../firebase";
 
 const Login = () => {
   return (
     <div className="home">
-      <Helmet>
+      {/* <Helmet>
         <title>{`${appName} - Login`}</title>
-      </Helmet>
+      </Helmet> */}
       <SmallLogin />
     </div>
   );
@@ -19,7 +18,7 @@ const Login = () => {
 export function SmallLogin() {
   const { user } = useAuth();
   useEffect(() => {
-    firebaseUI();
+    // firebaseUI();
   }, []);
   return (
     <div className="login">
@@ -29,11 +28,10 @@ export function SmallLogin() {
           Sign in to get creative.
         </p>
       </div>
-      <div id="firebaseui-auth-container"></div>
-      <div id="loader">Loading...</div>
+      <StyledFirebaseAuth uiConfig={firebaseUIConfig} firebaseAuth={auth} />
       {user && (
-        <Link to="/" className="visited">
-          &lt; Home
+        <Link href="/" className="visited">
+          <a>&lt; Home</a>
         </Link>
       )}
     </div>

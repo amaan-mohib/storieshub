@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import FeatherIcon from "feather-icons-react";
-import { Link } from "react-router-dom";
+import Link from "./Link";
 import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
 import ClickAwayListener from "react-click-away-listener";
-import { genres } from "./Create";
-import { createMarkup } from "./Edit";
+import { genres } from "../views/Create";
+import { createMarkup } from "../views/Edit";
 
 const Feed = (props) => {
   const [like, setLike] = useState(false);
@@ -62,7 +62,7 @@ const Feed = (props) => {
       )}
       <div className="feed-title">
         <div>
-          <Link className="feed-title-heading" to={`/book/${props.data.id}`}>
+          <Link className="feed-title-heading" href={`/book/${props.data.id}`}>
             <h2>{props.data.title}</h2>
           </Link>
           <p>
@@ -72,7 +72,7 @@ const Feed = (props) => {
                   <>
                     <Link
                       className="feed-author"
-                      to={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
+                      href={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
                     {index < props.data.authors.length - 1 ? ", " : ""}
                   </>
                 );

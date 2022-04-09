@@ -1,12 +1,12 @@
 import { convertToRaw, EditorState } from "draft-js";
 import React, { useEffect, useRef, useState } from "react";
-import { Editor } from "react-draft-wysiwyg";
-import { useHistory, useParams } from "react-router";
+// import { Editor } from ;
+// import { useHistory, useParams } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import { Link } from "react-router-dom";
+import Link from "../components/Link";
 import PreviewProvider, { usePreview } from "../contexts/PreviewContext";
 import { convertFromHTML } from "draft-convert";
 import DOMPurify from "dompurify";
@@ -16,16 +16,19 @@ import short from "short-uuid";
 import { genres } from "./Create";
 import { isMobile } from "react-device-detect";
 import ClickAwayListener from "react-click-away-listener";
-import MessageMain from "./Message";
-import Prs from "./Prs";
-import PublishForm from "./PublishForm";
-import { Helmet } from "react-helmet";
-import { appName, webUrl } from "../config";
+import MessageMain from "../components/Message";
+import Prs from "../components/Prs";
+import PublishForm from "../components/PublishForm";
+import dynamic from "next/dynamic";
+// import { Helmet } from "react-helmet";
+// import { appName, webUrl } from "../config";
+
+const Editor = dynamic(() => import("react-draft-wysiwyg"), { ssr: false });
 
 const Edit = () => {
   const { user } = useAuth();
-  const { id } = useParams();
-  const history = useHistory();
+  const { id } = { id: "" };
+  // const history = useHistory();
   const [error, setError] = useState(false);
   const [data, setData] = useState({});
   useEffect(() => {
@@ -35,7 +38,7 @@ const Edit = () => {
       .then((doc) => {
         if (doc.exists) {
           if (!doc.data().uids.includes(user.uid)) {
-            history.replace("/");
+            // history.replace("/");
           }
           setData(doc.data());
           console.log(doc.data());
@@ -48,9 +51,9 @@ const Edit = () => {
   return (
     <PreviewProvider>
       <div>
-        <Helmet>
+        {/* <Helmet>
           <title>{`${appName} - Edit`}</title>
-        </Helmet>
+        </Helmet> */}
         <Navbar />
         {error ? (
           <div className="main">No book with ID {id}</div>
@@ -724,7 +727,7 @@ const Members = () => {
               className="pfp nav-img"
             />
             <Link
-              to={`/profile/${a.id}`}
+              href={`/profile/${a.id}`}
               className="feed-author"
               style={
                 a.leader ? { fontWeight: "bold" } : { fontWeight: "normal" }
@@ -927,7 +930,7 @@ const Requests = () => {
                 className="pfp nav-img"
               />
               <Link
-                to={`/profile/${data.id}`}
+                href={`/profile/${data.id}`}
                 className="feed-author">{`${data.displayName}`}</Link>
             </div>
             <div>

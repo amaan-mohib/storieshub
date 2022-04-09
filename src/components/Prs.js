@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ClickAwayListener from "react-click-away-listener";
-import { useParams } from "react-router-dom";
+import { useParams } from "./Link";
 import { usePreview } from "../contexts/PreviewContext";
 import { db } from "../firebase";
 import FeatherIcon from "feather-icons-react";
-import { createMarkup } from "./Edit";
+import { createMarkup } from "../views/Edit";
 
 const Prs = () => {
   const { setPrs } = usePreview();

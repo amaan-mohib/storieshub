@@ -3,8 +3,8 @@ import { usePreview } from "../contexts/PreviewContext";
 import FeatherIcon from "feather-icons-react";
 import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
-import { useParams } from "react-router-dom";
-import { LoaderIcon } from "./Edit";
+import { useParams } from "./Link";
+import { LoaderIcon } from "../views/Edit";
 
 const MessageMain = () => {
   const { messages, setRead, read } = usePreview();

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import Link from "./Link";
 import { useAuth } from "../contexts/AuthContext";
 import FeatherIcon from "feather-icons-react";
 import ClickAwayListener from "react-click-away-listener";
@@ -8,7 +8,7 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   return (
     <nav>
-      <Link className="heading comp" to="/">
+      <Link className="heading comp" href="/">
         <h1>StoriesHub</h1>
       </Link>
       <div className="tabs">
@@ -67,11 +67,13 @@ const Navbar = () => {
                   fontSize: "small",
                   padding: "10px",
                 }}>
-                <Link to="/terms" style={{ color: "var(--secondary-text)" }}>
+                <Link href="/terms" style={{ color: "var(--secondary-text)" }}>
                   Terms of Service
                 </Link>
                 &emsp;&nbsp;•&emsp;&nbsp;
-                <Link to="/policies" style={{ color: "var(--secondary-text)" }}>
+                <Link
+                  href="/policies"
+                  style={{ color: "var(--secondary-text)" }}>
                   Privacy Policy
                 </Link>
               </div>
@@ -79,7 +81,7 @@ const Navbar = () => {
           </NavItem>
         </div>
       ) : (
-        <Link to="/" className="button">
+        <Link href="/" className="button">
           Log in
         </Link>
       )}
@@ -105,7 +107,7 @@ const DropDown = (props) => {
 const DropDownItem = (props) => {
   return (
     <li onClick={props.onClick}>
-      <Link to={props.link} className="dropdown-item">
+      <Link href={props.link} className="dropdown-item">
         <span className="dropdown-icon">{props.icon}</span>
         <div className="dropdown-text">
           <p className="dropdown-primary">{props.primary}</p>
@@ -121,7 +123,7 @@ const TabItem = (props) => {
   };
   return (
     <Link
-      to={props.route}
+      href={props.route}
       className={`dropdown-item tab-icon${activeClass(props.route)}`}
       title={props.title}>
       <FeatherIcon
