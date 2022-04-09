@@ -112,9 +112,7 @@ export const Feeds = () => {
 export function NotSignedIn() {
   return (
     <div className="home">
-      {/* <Helmet>
-        <title>{`${appName} - Login`}</title>
-      </Helmet> */}
+      <SEO title="Login" />
       <div className="landing">
         <div>
           <h1 style={{ fontSize: "3rem" }}>StoriesHub</h1>

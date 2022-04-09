@@ -1,41 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "./Link";
-import Link from "./Link";
+import Link from "../components/Link";
 import { db, timestamp } from "../firebase";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import FeatherIcon from "feather-icons-react";
 import { useAuth } from "../contexts/AuthContext";
 import { genres } from "./Create";
-import ProfileProvider, { useProfile } from "../contexts/ProfileContext";
+import { useProfile } from "../contexts/ProfileContext";
 import ClickAwayListener from "react-click-away-listener";
-import { Helmet } from "react-helmet";
 import { appName } from "../config";
 import { createMarkup } from "./Edit";
+import { useRouter } from "next/router";
+import SEO from "../components/Helmet";
+import { isS } from "../utils/utils";
 
-const Profile = () => {
-  return (
-    <ProfileProvider>
-      <ProfileBody />
-    </ProfileProvider>
-  );
-};
-
-const ProfileBody = () => {
-  const { uid } = useParams();
+const ProfileBody = ({ uid }) => {
   const { user } = useAuth();
-  const [data, setData] = useState({
-    displayName: "Loading",
-    email: "Loading",
-    photoURL:
-      "https://www.searchpng.com/wp-content/uploads/2019/02/Men-Profile-Image-PNG.png",
-    followers: [],
-    following: [],
-  });
   const [followed, setFollowed] = useState(false);
-  const [error, setError] = useState(false);
-  const { drafts, setDrafts, published, setPublished } = useProfile();
+  const { data, error, drafts, setDrafts, published } = useProfile();
   const [activeTab, setActiveTab] = useState(0);
   const [open, setOpen] = useState(false);
+
   const activeClass = (index) => {
     return activeTab === index ? " tab-active" : "";
   };
@@ -44,21 +28,13 @@ const ProfileBody = () => {
     { name: "Published", icon: "book" },
   ];
   useEffect(() => {
-    let docRef = db.collection("users").doc(uid);
-    docRef
-      .get()
-      .then((doc) => {
-        if (doc.exists) {
-          setData(doc.data());
-          if (!user || user.uid !== uid) setActiveTab(1);
-          if (doc.data().followers && doc.data().followers.includes(user.uid)) {
-            setFollowed(true);
-          }
-        } else {
-          setError(true);
-        }
-      })
-      .catch((err) => console.error(err));
+    if (data) {
+      if (!user || user.uid !== uid) setActiveTab(1);
+      if (data.followers && data.followers.includes(user.uid)) {
+        setFollowed(true);
+      }
+    }
+
     //Drafts
     if (user && user.uid === uid) {
       db.collection("books")
@@ -72,18 +48,8 @@ const ProfileBody = () => {
         })
         .catch((err) => console.error(err));
     }
-    //Published
-    db.collection("published")
-      .where("uids", "array-contains", uid)
-      .get()
-      .then((querySnapshot) => {
-        const docs = querySnapshot.docs.map((doc) => doc.data());
-        setPublished(
-          docs.sort((a, b) => b.updatedAt.toDate() - a.updatedAt.toDate())
-        );
-      })
-      .catch((err) => console.error(err));
-  }, [uid, user]);
+  }, [data, uid, user]);
+
   const followSate = () => {
     setFollowed(true);
     follow();
@@ -185,9 +151,18 @@ const ProfileBody = () => {
   return (
     <div>
       <Navbar />
-      <Helmet>
-        <title>{`${data.displayName} - ${appName}`}</title>
-      </Helmet>
+      <SEO
+        title={data.displayName}
+        description={`${data.displayName} has published ${
+          published.length
+        } stories on ${appName} with ${
+          data.followers ? data.followers.length : 0
+        } follower${isS(data.followers)}\n Books: ${
+          published.length > 0
+            ? published.map((b) => `${b.title}`).join(", ")
+            : "None"
+        }`}
+      />
       <div className="main">
         {error ? (
           <div className="home-nav">
@@ -230,9 +205,9 @@ const ProfileBody = () => {
                 onClick={() => {
                   if (user) setOpen(true);
                 }}>
-                {`${data.followers ? data.followers.length : 0} follower${
-                  data.followers && data.followers.length > 1 ? "s" : ""
-                } • ${data.following ? data.following.length : 0} following`}
+                {`${data.followers ? data.followers.length : 0} follower${isS(
+                  data.followers
+                )} • ${data.following ? data.following.length : 0} following`}
               </p>
               {open && (
                 <div className="dialog-bg">
@@ -280,9 +255,7 @@ const ProfileBody = () => {
                     color: "var(--secondary-text)",
                   }}>{`${published.length} published${
                   user && user.uid === uid
-                    ? ` • ${drafts.length} draft${
-                        drafts.length > 1 ? "s" : ""
-                      } (private)`
+                    ? ` • ${drafts.length} draft${isS(drafts)} (private)`
                     : ""
                 }`}</p>
               </div>
@@ -372,6 +345,7 @@ const Books = () => {
 };
 const Published = () => {
   const { published } = useProfile();
+
   return (
     <div style={{ marginTop: "5px" }}>
       {published.length > 0 ? (
@@ -415,9 +389,7 @@ const Published = () => {
                 <p key={index}>{k}</p>
               ))}
             </div>
-            <div className="published">
-              {b.updatedAt.toDate().toDateString()}
-            </div>
+            <div className="published">{b.updatedAt}</div>
           </div>
         ))
       ) : (
@@ -427,7 +399,7 @@ const Published = () => {
   );
 };
 const FollowDialog = ({ close1, close2 }) => {
-  const { uid } = useParams();
+  const { uid } = useRouter().query;
   const { user } = useAuth();
   const [tab, setTab] = useState(0);
   const [data, setData] = useState([]);
@@ -634,4 +606,4 @@ const FollowDialog = ({ close1, close2 }) => {
     </div>
   );
 };
-export default Profile;
+export default ProfileBody;

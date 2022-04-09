@@ -1,6 +1,7 @@
 import "../styles/index.css";
 import { useEffect } from "react";
 import AuthProvider from "../src/contexts/AuthContext";
+import SEO from "../src/components/Helmet";
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -14,9 +15,12 @@ function MyApp({ Component, pageProps }) {
     }
   }, []);
   return (
-    <AuthProvider>
-      <Component {...pageProps} />
-    </AuthProvider>
+    <>
+      <SEO />
+      <AuthProvider>
+        <Component {...pageProps} />
+      </AuthProvider>
+    </>
   );
 }
 

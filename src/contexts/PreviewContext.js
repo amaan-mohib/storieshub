@@ -7,74 +7,24 @@ export function usePreview() {
 }
 
 const PreviewProvider = ({ children }) => {
-  const [title, changeTitle] = useState("");
-  const [tags, changeTags] = useState([]);
-  const [body, changeBody] = useState("");
-  const [mobileBody, changeMobileBody] = useState("");
-  const [synopsis, changeSynopsis] = useState("");
-  const [otherData, changeOther] = useState([]);
-  const [requests, changeRequests] = useState([]);
-  const [genre, changeGenre] = useState("");
-  const [nsfw, changeNsfw] = useState(false);
-  const [error, changeError] = useState(false);
-  const [uuid, changeUuid] = useState("");
-  const [book, changeData] = useState({});
-  const [render, changeRender] = useState(0);
-  const [prs, changePrs] = useState(0);
-  const [requested, changeRequested] = useState(false);
-  const [messages, changeMessages] = useState([]);
-  const [read, changeRead] = useState(0);
-  function setTitle(title) {
-    changeTitle(title);
-  }
-  function setTags(title) {
-    changeTags(title);
-  }
-  function setSynopsis(title) {
-    changeSynopsis(title);
-  }
-  function setGenre(title) {
-    changeGenre(title);
-  }
-  function setNsfw(title) {
-    changeNsfw(title);
-  }
-  function setError(err) {
-    changeError(err);
-  }
-  function setBody(body) {
-    changeBody(body);
-  }
-  function setOtherData(data) {
-    changeOther(data);
-  }
-  function setUuid(data) {
-    changeUuid(data);
-  }
-  function setBook(data) {
-    changeData(data);
-  }
-  function setRender(data) {
-    changeRender(data);
-  }
-  function setMobileBody(data) {
-    changeMobileBody(data);
-  }
-  function setPrs(data) {
-    changePrs(data);
-  }
-  function setRequested(data) {
-    changeRequested(data);
-  }
-  function setRequests(data) {
-    changeRequests(data);
-  }
-  function setMessages(data) {
-    changeMessages(data);
-  }
-  function setRead(data) {
-    changeRead(data);
-  }
+  const [title, setTitle] = useState("");
+  const [tags, setTags] = useState([]);
+  const [body, setBody] = useState("");
+  const [mobileBody, setMobileBody] = useState("");
+  const [synopsis, setSynopsis] = useState("");
+  const [otherData, setOtherData] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [genre, setGenre] = useState("");
+  const [nsfw, setNsfw] = useState(false);
+  const [error, setError] = useState(false);
+  const [uuid, setUuid] = useState("");
+  const [book, setBook] = useState({});
+  const [render, setRender] = useState(0);
+  const [prs, setPrs] = useState(0);
+  const [requested, setRequested] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [read, setRead] = useState(0);
+
   const value = {
     title,
     setTitle,

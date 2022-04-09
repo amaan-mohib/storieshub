@@ -7,20 +7,27 @@ export function useProfile() {
 }
 
 const ProfileProvider = ({ children }) => {
-  const [drafts, changeDrafts] = useState([]);
-  const [published, changePublished] = useState([]);
-  function setDrafts(title) {
-    changeDrafts(title);
-  }
+  const [drafts, setDrafts] = useState([]);
+  const [published, setPublished] = useState([]);
+  const [data, setData] = useState({
+    displayName: "Loading",
+    email: "Loading",
+    photoURL:
+      "https://www.pngall.com/wp-content/uploads/5/Profile-PNG-File.png",
+    followers: [],
+    following: [],
+  });
+  const [error, setError] = useState(null);
 
-  function setPublished(data) {
-    changePublished(data);
-  }
   const value = {
+    data,
+    setData,
     drafts,
     setDrafts,
     published,
     setPublished,
+    error,
+    setError,
   };
   return (
     <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>

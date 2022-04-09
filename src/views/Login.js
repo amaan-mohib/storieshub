@@ -1,15 +1,24 @@
+import { useRouter } from "next/router";
 import React, { useEffect } from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+import SEO from "../components/Helmet";
 import Link from "../components/Link";
 import { useAuth } from "../contexts/AuthContext";
 import { auth, firebaseUIConfig } from "../firebase";
 
 const Login = () => {
+  const router = useRouter();
+  const { from } = router.query;
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (from && user) {
+      router.push(decodeURIComponent(from));
+    }
+  }, [user]);
   return (
     <div className="home">
-      {/* <Helmet>
-        <title>{`${appName} - Login`}</title>
-      </Helmet> */}
+      <SEO title="Login" />
       <SmallLogin />
     </div>
   );
@@ -17,9 +26,7 @@ const Login = () => {
 
 export function SmallLogin() {
   const { user } = useAuth();
-  useEffect(() => {
-    // firebaseUI();
-  }, []);
+
   return (
     <div className="login">
       <div className="comp">

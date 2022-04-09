@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "./Navbar";
+import Navbar from "../components/Navbar";
 import FeatherIcon from "feather-icons-react";
 import ToggleButton from "react-toggle-button";
-import { Helmet } from "react-helmet";
-import { appName } from "../config";
 import ClickAwayListener from "react-click-away-listener";
+import SEO from "../components/Helmet";
+import { appName } from "../config";
 
 export const light = {
   "--background": "hsl(43, 100%, 95%)",
@@ -52,9 +52,7 @@ const Settings = () => {
   const handleClose = () => setOpen(false);
   return (
     <div>
-      <Helmet>
-        <title>{`${appName} - Settings`}</title>
-      </Helmet>
+      <SEO title="Settings" />
       <Navbar />
       <div className="main">
         {open && (

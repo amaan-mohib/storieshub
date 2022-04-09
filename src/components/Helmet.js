@@ -5,7 +5,7 @@ import { appName } from "../config";
 const SEO = ({ description = "", title = "" }) => {
   description =
     description || "Create and share stories with a team or individually.";
-  title = title ? `${title} - ${appName}` : appName;
+  title = title ? `${title} | ${appName}` : appName;
   return (
     <Head>
       <meta name="theme-color" content="#fff8e5" />

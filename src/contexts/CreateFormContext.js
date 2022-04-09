@@ -7,31 +7,13 @@ export function useForm() {
 }
 
 const FormProvider = ({ children }) => {
-  const [title, changeTitle] = useState("");
-  const [tags, changeTags] = useState([]);
-  const [synopsis, changeSynopsis] = useState("");
-  const [genre, changeGenre] = useState("");
-  const [nsfw, changeNsfw] = useState(false);
-  const [error, changeError] = useState(false);
+  const [title, setTitle] = useState("");
+  const [tags, setTags] = useState([]);
+  const [synopsis, setSynopsis] = useState("");
+  const [genre, setGenre] = useState("");
+  const [nsfw, setNsfw] = useState(false);
+  const [error, setError] = useState(false);
 
-  function setTitle(title) {
-    changeTitle(title);
-  }
-  function setTags(title) {
-    changeTags(title);
-  }
-  function setSynopsis(title) {
-    changeSynopsis(title);
-  }
-  function setGenre(title) {
-    changeGenre(title);
-  }
-  function setNsfw(title) {
-    changeNsfw(title);
-  }
-  function setError(err) {
-    changeError(err);
-  }
   const value = {
     title,
     setTitle,
