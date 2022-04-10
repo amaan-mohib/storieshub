@@ -214,7 +214,9 @@ const PublishBody = ({ story, error }) => {
             {`Select Genre${error ? "*" : ""}`}
           </option>
           {genres.map((g, i) => (
-            <option value={i}>{g}</option>
+            <option value={i} key={i}>
+              {g}
+            </option>
           ))}
         </select>
       </div>
