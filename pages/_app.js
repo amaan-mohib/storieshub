@@ -4,6 +4,7 @@ import AuthProvider from "../src/contexts/AuthContext";
 import SEO from "../src/components/Helmet";
 import ProgressBar from "@badrap/bar-of-progress";
 import { Router } from "next/router";
+import { darkObj } from "../src/views/Settings";
 
 const progress = new ProgressBar({
   color: "var(--secondary-text)",

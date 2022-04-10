@@ -3,7 +3,6 @@ import { usePreview } from "../contexts/PreviewContext";
 import FeatherIcon from "feather-icons-react";
 import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
-import { useParams } from "./Link";
 import { LoaderIcon } from "../views/Edit";
 import { useRouter } from "next/router";
 

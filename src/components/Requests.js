@@ -2,6 +2,7 @@ import React from "react";
 import { useRouter } from "next/router";
 import { usePreview } from "../contexts/PreviewContext";
 import { db, timestamp } from "../firebase";
+import Link from "./Link";
 
 const Requests = () => {
   const { requests, setOtherData, setRequests } = usePreview();
@@ -80,7 +81,7 @@ const Requests = () => {
   return requests.length > 0 ? (
     <div>
       <ul className="team-members">
-        {requests.map((data, index) => (
+        {requests.map((data) => (
           <li className="team-member request" key={data.id}>
             <div className="team-member-div">
               <img
