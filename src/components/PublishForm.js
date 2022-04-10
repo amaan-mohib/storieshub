@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { useHistory, useParams } from "./Link";
 import { usePreview } from "../contexts/PreviewContext";
 import ToggleButton from "react-toggle-button";
 import { genres } from "../views/Create";
 import { LoaderIcon } from "../views/Edit";
 import { db, timestamp } from "../firebase";
-import { ReactComponent as SVG } from "./undraw_Done_re_oak4.svg";
+import { useRouter } from "next/router";
 
 const PublishForm = ({ close1 = <div></div>, close2 = <div></div>, data }) => {
-  const { id } = useParams();
+  const history = useRouter();
+  const { id } = history.query;
   const [complete, setComp] = useState(false);
   const { title, synopsis, genre, tags, nsfw, body, mobileBody, otherData } =
     usePreview();
@@ -17,7 +17,7 @@ const PublishForm = ({ close1 = <div></div>, close2 = <div></div>, data }) => {
   const [next, setNext] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deletingMsg, setDeletingMsg] = useState("draft");
-  const history = useHistory();
+
   const validation = () => {
     if (
       title.trim() === "" ||
@@ -99,7 +99,7 @@ const PublishForm = ({ close1 = <div></div>, close2 = <div></div>, data }) => {
             <h3 className="p-dialog">{`Deleting ${deletingMsg}...`}</h3>
           ) : (
             <div style={{ textAlign: "center" }}>
-              <SVG className="svg" />
+              <img src="/Done.svg" className="svg" />
               <h3 className="p-dialog">Your story has been published!</h3>
               {complete ? (
                 <p
