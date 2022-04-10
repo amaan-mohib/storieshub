@@ -2,6 +2,16 @@ import "../styles/index.css";
 import { useEffect } from "react";
 import AuthProvider from "../src/contexts/AuthContext";
 import SEO from "../src/components/Helmet";
+import ProgressBar from "@badrap/bar-of-progress";
+import { Router } from "next/router";
+
+const progress = new ProgressBar({
+  color: "var(--secondary-text)",
+});
+
+Router.events.on("routeChangeStart", progress.start);
+Router.events.on("routeChangeComplete", progress.finish);
+Router.events.on("routeChangeError", progress.finish);
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {

@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
 import ClickAwayListener from "react-click-away-listener";
 import { genres } from "../views/Create";
-import { createMarkup } from "../views/Edit";
+import { createMarkup } from "../utils/utils";
 
 const Feed = (props) => {
   const [like, setLike] = useState(false);

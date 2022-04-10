@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "../components/Link";
-import { createMarkup } from "./Edit";
 import FeatherIcon from "feather-icons-react";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../contexts/AuthContext";
@@ -10,6 +9,7 @@ import { appName } from "../config";
 import ClickAwayListener from "react-click-away-listener";
 import { ReportDialog } from "../components/Feed";
 import SEO from "../components/Helmet";
+import { createMarkup } from "../utils/utils";
 
 const Book = () => {
   const { id } = useParams();

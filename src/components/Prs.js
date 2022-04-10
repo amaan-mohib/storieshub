@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import ClickAwayListener from "react-click-away-listener";
-import { useParams } from "./Link";
 import { usePreview } from "../contexts/PreviewContext";
 import { db } from "../firebase";
 import FeatherIcon from "feather-icons-react";
-import { createMarkup } from "../views/Edit";
+import { useRouter } from "next/router";
+import { createMarkup } from "../utils/utils";
 
 const Prs = () => {
   const { setPrs } = usePreview();
+  const router = useRouter();
   const [prs, setThisPrs] = useState([]);
   const [copied, setCopied] = useState(false);
   const [pr, setPr] = useState({
@@ -16,7 +17,7 @@ const Prs = () => {
     title: "loading",
   });
   const [open, setOpen] = useState(false);
-  const { id } = useParams();
+  const { id } = router.query;
   useEffect(() => {
     let docRef = db.collection("books").doc(id).collection("prs");
     let unsub = docRef.orderBy("updatedAt", "desc").onSnapshot((query) => {

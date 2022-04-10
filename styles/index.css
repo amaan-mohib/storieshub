@@ -61,6 +61,9 @@ nav {
   background-color: var(--nav-background-blur);
   backdrop-filter: blur(10px);
 }
+.bar-of-progress{
+  top:var(--nav-height) !important;
+}
 .visited {
   color: #4285f4;
 }

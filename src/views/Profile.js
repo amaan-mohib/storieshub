@@ -8,10 +8,9 @@ import { genres } from "./Create";
 import { useProfile } from "../contexts/ProfileContext";
 import ClickAwayListener from "react-click-away-listener";
 import { appName } from "../config";
-import { createMarkup } from "./Edit";
 import { useRouter } from "next/router";
 import SEO from "../components/Helmet";
-import { isS } from "../utils/utils";
+import { createMarkup, isS } from "../utils/utils";
 
 const ProfileBody = ({ uid }) => {
   const { user } = useAuth();
@@ -157,7 +156,7 @@ const ProfileBody = ({ uid }) => {
           published.length
         } stories on ${appName} with ${
           data.followers ? data.followers.length : 0
-        } follower${isS(data.followers)}\n Books: ${
+        } ${isS(data.followers, "follower")}\n Books: ${
           published.length > 0
             ? published.map((b) => `${b.title}`).join(", ")
             : "None"
@@ -205,8 +204,9 @@ const ProfileBody = ({ uid }) => {
                 onClick={() => {
                   if (user) setOpen(true);
                 }}>
-                {`${data.followers ? data.followers.length : 0} follower${isS(
-                  data.followers
+                {`${data.followers ? data.followers.length : 0} ${isS(
+                  data.followers,
+                  "follower"
                 )} • ${data.following ? data.following.length : 0} following`}
               </p>
               {open && (
@@ -255,7 +255,7 @@ const ProfileBody = ({ uid }) => {
                     color: "var(--secondary-text)",
                   }}>{`${published.length} published${
                   user && user.uid === uid
-                    ? ` • ${drafts.length} draft${isS(drafts)} (private)`
+                    ? ` • ${drafts.length} ${isS(drafts, "draft")} (private)`
                     : ""
                 }`}</p>
               </div>

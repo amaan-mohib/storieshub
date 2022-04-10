@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useHistory } from "../components/Link";
+import Link from "../components/Link";
 import { useAuth } from "../contexts/AuthContext";
 import { NotSignedIn } from "./Home";
 import Navbar from "../components/Navbar";
@@ -9,8 +9,7 @@ import { genres } from "./Create";
 import short from "short-uuid";
 import { LoaderIcon } from "./Edit";
 import SEO from "../components/Helmet";
-// import { Helmet } from "react-helmet";
-// import { appName } from "../config";
+import { useRouter } from "next/router";
 
 const Teams = () => {
   const { user } = useAuth();
@@ -27,7 +26,7 @@ const Groups = () => {
   const [uuid, setUuid] = useState("");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const history = useHistory();
+  const history = useRouter();
   useEffect(() => {
     let docRef = db.collection("requests");
     docRef
@@ -64,9 +63,6 @@ const Groups = () => {
   };
   return (
     <div>
-      {/* <Helmet>
-        <title>{`${appName} - Teams`}</title>
-      </Helmet> */}
       <Navbar />
       <div className="main">
         <div className="feeds ">

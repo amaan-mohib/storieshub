@@ -1,13 +1,11 @@
 import React from "react";
-import { Helmet } from "react-helmet";
+import SEO from "../components/Helmet";
 import { appName } from "../config";
 
 const Tos = () => {
   return (
     <div className="home">
-      <Helmet>
-        <title>{`Terms of Service - ${appName}`}</title>
-      </Helmet>
+      <SEO title="Terms of Service" />
       <div className="tos">
         <h1 style={{ marginBottom: "20px" }}>
           Website Terms and Conditions of Use
@@ -144,9 +142,7 @@ export default Tos;
 export const Policy = () => {
   return (
     <div className="home">
-      <Helmet>
-        <title>{`Privacy Policy - ${appName}`}</title>
-      </Helmet>
+      <SEO title="Privacy Policy" />
       <div className="tos">
         <h1 style={{ marginBottom: "20px" }}>Privacy Policy for StoriesHub</h1>
         <p>

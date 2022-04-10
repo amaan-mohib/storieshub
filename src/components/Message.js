@@ -5,10 +5,12 @@ import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
 import { useParams } from "./Link";
 import { LoaderIcon } from "../views/Edit";
+import { useRouter } from "next/router";
 
 const MessageMain = () => {
   const { messages, setRead, read } = usePreview();
-  const { id } = useParams();
+  const router = useRouter();
+  const { id } = router.query;
   const { user } = useAuth();
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
