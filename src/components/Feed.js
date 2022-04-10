@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import FeatherIcon from "feather-icons-react";
 import Link from "./Link";
 import { useAuth } from "../contexts/AuthContext";
@@ -69,12 +69,12 @@ const Feed = (props) => {
             {props.data.authors &&
               props.data.authors.map((a, index) => {
                 return (
-                  <>
+                  <Fragment key={index}>
                     <Link
                       className="feed-author"
                       href={`/profile/${a.id}`}>{`${a.displayName}`}</Link>
                     {index < props.data.authors.length - 1 ? ", " : ""}
-                  </>
+                  </Fragment>
                 );
               })}
           </p>

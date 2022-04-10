@@ -75,6 +75,7 @@ export const Feeds = () => {
             {sortFilters.map((filter, index) => (
               <button
                 className={`dropdown-item tab-icon${activeClass(index)}`}
+                key={index}
                 onClick={() => {
                   setSort(index);
                 }}>
@@ -91,7 +92,7 @@ export const Feeds = () => {
             ))}
           </div>
           {feed.length > 0 ? (
-            feed.map((data) => <Feed data={data} />)
+            feed.map((data) => <Feed key={data.id} data={data} />)
           ) : (
             <div
               style={{
