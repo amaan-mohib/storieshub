@@ -8,6 +8,13 @@ const SEO = ({ description = "", title = "" }) => {
   title = title ? `${title} | ${appName}` : appName;
   return (
     <Head>
+      <meta charset="utf-8" key="charset" />
+      <link rel="icon" href="/favicon.ico" key="icon" />
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+        key="viewport"
+      />
       <meta name="theme-color" content="#fff8e5" key="theme-color" />
       <title>{title}</title>
       <meta name="description" content={description} key="description" />
@@ -39,7 +46,12 @@ const SEO = ({ description = "", title = "" }) => {
         content={description}
         key="twitter:description"
       />
-      <link rel="apple-touch-icon" href="/android-chrome-192x192.png" />
+      <link
+        rel="apple-touch-icon"
+        href="/android-chrome-192x192.png"
+        key="touch-icon"
+      />
+      <link rel="manifest" href="/manifest.json" key="manifest" />
     </Head>
   );
 };
