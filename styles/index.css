@@ -61,9 +61,9 @@ nav {
   background-color: var(--nav-background-blur);
   backdrop-filter: blur(10px);
 }
-.bar-of-progress{
+/* .bar-of-progress{
   top:var(--nav-height) !important;
-}
+} */
 .visited {
   color: #4285f4;
 }
@@ -127,6 +127,7 @@ hr {
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  cursor: pointer;
   transition-duration: 0.4s;
 }
 

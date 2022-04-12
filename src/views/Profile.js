@@ -28,8 +28,8 @@ const ProfileBody = ({ uid }) => {
   ];
   useEffect(() => {
     if (data) {
-      if (!user || user.uid !== uid) setActiveTab(1);
-      if (data.followers && data.followers.includes(user.uid)) {
+      if (!user || (user && user.uid !== uid)) setActiveTab(1);
+      if (user && data.followers && data.followers.includes(user.uid)) {
         setFollowed(true);
       }
     }

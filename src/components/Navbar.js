@@ -3,9 +3,29 @@ import Link from "./Link";
 import { useAuth } from "../contexts/AuthContext";
 import FeatherIcon from "feather-icons-react";
 import ClickAwayListener from "react-click-away-listener";
+import { useRouter } from "next/router";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const items = [
+    {
+      icon: <FeatherIcon icon="settings" />,
+      primary: "Settings",
+      link: "/settings",
+    },
+    {
+      icon: <FeatherIcon icon="user-plus" />,
+      primary: "Change account",
+      link: "/login",
+    },
+    {
+      icon: <FeatherIcon icon="log-out" />,
+      primary: "Log out",
+      onClick: () => logout(),
+    },
+  ];
   return (
     <nav>
       <Link className="heading comp" href="/">
@@ -42,22 +62,14 @@ const Navbar = () => {
                 link={`/profile/${user.uid}`}
               />
               <hr />
-              <DropDownItem
-                icon={<FeatherIcon icon="settings" />}
-                primary="Settings"
-                link="/settings"
-              />
-              <DropDownItem
-                icon={<FeatherIcon icon="user-plus" />}
-                primary="Change account"
-                link="/login"
-              />
-              <DropDownItem
-                icon={<FeatherIcon icon="log-out" />}
-                primary="Log out"
-                link="/logout"
-                onClick={() => logout()}
-              />
+              {items.map((item, index) => (
+                <DropDownItem
+                  key={index}
+                  icon={item.icon}
+                  primary={item.primary}
+                  link={item.link}
+                />
+              ))}
               <hr />
               <div
                 style={{
@@ -81,7 +93,7 @@ const Navbar = () => {
           </NavItem>
         </div>
       ) : (
-        <Link href="/" className="button">
+        <Link href={`/login?from=${router.asPath}`} className="button">
           Log in
         </Link>
       )}
@@ -105,21 +117,31 @@ const DropDown = (props) => {
   return <ul className="dropdown">{props.children}</ul>;
 };
 const DropDownItem = (props) => {
+  const body = (
+    <>
+      <span className="dropdown-icon">{props.icon}</span>
+      <div className="dropdown-text">
+        <p className="dropdown-primary">{props.primary}</p>
+        <p className="dropdown-secondary">{props.secondary}</p>
+      </div>
+    </>
+  );
   return (
     <li onClick={props.onClick}>
-      <Link href={props.link} className="dropdown-item">
-        <span className="dropdown-icon">{props.icon}</span>
-        <div className="dropdown-text">
-          <p className="dropdown-primary">{props.primary}</p>
-          <p className="dropdown-secondary">{props.secondary}</p>
-        </div>
-      </Link>
+      {props.link ? (
+        <Link href={props.link} className="dropdown-item">
+          {body}
+        </Link>
+      ) : (
+        <div className="dropdown-item">{body}</div>
+      )}
     </li>
   );
 };
 const TabItem = (props) => {
+  const router = useRouter();
   const activeClass = (route) => {
-    return window.location.pathname === route ? " tab-active" : "";
+    return router.asPath === route ? " tab-active" : "";
   };
   return (
     <Link
