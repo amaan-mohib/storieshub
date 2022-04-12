@@ -27,7 +27,7 @@ function MyApp({ Component, pageProps }) {
   }, []);
   return (
     <>
-      <SEO />
+      {/* <SEO /> */}
       <AuthProvider>
         <Component {...pageProps} />
       </AuthProvider>
