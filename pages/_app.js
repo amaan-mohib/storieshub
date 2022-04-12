@@ -25,9 +25,10 @@ function MyApp({ Component, pageProps }) {
       });
     }
   }, []);
+
   return (
     <>
-      <SEO />
+      <SEO title={pageProps?.title} description={pageProps?.description} />
       <AuthProvider>
         <Component {...pageProps} />
       </AuthProvider>

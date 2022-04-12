@@ -1,5 +1,10 @@
 import React from "react";
 import { db } from "../../src/firebase";
+import {
+  capitalize,
+  joinObjects,
+  parseHTMLString,
+} from "../../src/utils/utils";
 import Book from "../../src/views/Book";
 
 const book = ({ id, data, error }) => {
@@ -28,6 +33,14 @@ export async function getServerSideProps(context) {
       id,
       data: JSON.parse(JSON.stringify(data)),
       error,
+      title: `${capitalize(data.title)} - A Story by ${joinObjects(
+        data.authors,
+        "displayName"
+      )}`,
+      description: `"${capitalize(data.title)}" by ${joinObjects(
+        data.authors,
+        "displayName"
+      )} · ${parseHTMLString(data.synopsis)}`,
     },
   };
 }

@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
+import { appName } from "../../src/config";
 import ProfileProvider, { useProfile } from "../../src/contexts/ProfileContext";
 import { db } from "../../src/firebase";
+import { isS } from "../../src/utils/utils";
 import ProfileBody from "../../src/views/Profile";
 
 const Profile = ({ uid, data, published, error }) => {
@@ -52,6 +54,16 @@ export async function getServerSideProps(context) {
       data: JSON.parse(JSON.stringify(data)),
       published: JSON.parse(JSON.stringify(published)),
       error,
+      title: data.displayName,
+      description: `${data.displayName} has published ${
+        published.length
+      } stories on ${appName} with ${
+        data.followers ? data.followers.length : 0
+      } ${isS(data.followers, "follower")}\n Books: ${
+        published.length > 0
+          ? published.map((b) => `${b.title}`).join(", ")
+          : "None"
+      }`,
     },
   };
 }

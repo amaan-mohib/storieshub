@@ -8,7 +8,7 @@ const SEO = ({ description = "", title = "" }) => {
   title = title ? `${title} | ${appName}` : appName;
   return (
     <Head>
-      <meta charset="utf-8" key="charset" />
+      <meta charSet="utf-8" key="charset" />
       <link rel="icon" href="/favicon.ico" key="icon" />
       <meta
         name="viewport"
