@@ -1,7 +1,7 @@
 import "../styles/index.css";
 import { useEffect } from "react";
 import AuthProvider from "../src/contexts/AuthContext";
-import SEO from "../src/components/Helmet";
+// import SEO from "../src/components/Helmet";
 import ProgressBar from "@badrap/bar-of-progress";
 import { Router } from "next/router";
 import { darkObj } from "../src/views/Settings";
