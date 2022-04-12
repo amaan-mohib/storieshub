@@ -8,4 +8,4 @@ export const firebaseConfig = {
 };
 
 export const appName = "StoriesHub";
-export const webUrl = "https://storieshub.vercel.app/";
+export const webUrl = "https://storieshub.vercel.app";

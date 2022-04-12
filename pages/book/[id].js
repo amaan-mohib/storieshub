@@ -41,6 +41,7 @@ export async function getServerSideProps(context) {
         data.authors,
         "displayName"
       )} · ${parseHTMLString(data.synopsis)}`,
+      route: `/book/${id}`,
     },
   };
 }

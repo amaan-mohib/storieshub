@@ -28,7 +28,11 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <>
-      <SEO title={pageProps?.title} description={pageProps?.description} />
+      <SEO
+        title={pageProps?.title}
+        description={pageProps?.description}
+        route={pageProps?.route}
+      />
       <AuthProvider>
         <Component {...pageProps} />
       </AuthProvider>

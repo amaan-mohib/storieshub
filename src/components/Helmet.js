@@ -2,10 +2,11 @@ import Head from "next/head";
 import React from "react";
 import { appName, webUrl } from "../config";
 
-const SEO = ({ description = "", title = "" }) => {
+const SEO = ({ description = "", title = "", route = "" }) => {
   description =
     description || "Create and share stories with a team or individually.";
   title = title ? `${title} | ${appName}` : appName;
+  let url = route ? `${webUrl}${route}` : webUrl;
   return (
     <Head>
       <meta charSet="utf-8" key="charset" />
@@ -20,10 +21,10 @@ const SEO = ({ description = "", title = "" }) => {
       <meta name="description" content={description} key="description" />
       <meta property="og:type" content="website" key="og:type" />
       <meta property="og:title" content={title} key="og:title" />
-      <meta property="og:url" content={webUrl} key="og:url" />
+      <meta property="og:url" content={url} key="og:url" />
       <meta
         property="og:image"
-        content="/apple-touch-icon.png"
+        content={webUrl + "/apple-touch-icon.png"}
         key="og:image"
       />
       <meta property="og:image:width" content="180" />
@@ -48,10 +49,10 @@ const SEO = ({ description = "", title = "" }) => {
       />
       <link
         rel="apple-touch-icon"
-        href="/android-chrome-192x192.png"
+        href={webUrl + "/android-chrome-192x192.png"}
         key="touch-icon"
       />
-      <link rel="manifest" href="/manifest.json" key="manifest" />
+      <link rel="manifest" href={webUrl + "/manifest.json"} key="manifest" />
     </Head>
   );
 };

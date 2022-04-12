@@ -64,6 +64,7 @@ export async function getServerSideProps(context) {
           ? published.map((b) => `${b.title}`).join(", ")
           : "None"
       }`,
+      route: `/profile/${uid}`,
     },
   };
 }
