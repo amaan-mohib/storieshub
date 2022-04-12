@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { useHistory, useLocation, useParams } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
 import { NotSignedIn } from "./Home";
 import short from "short-uuid";
 import FeatherIcon from "feather-icons-react";
 import { db, timestamp } from "../firebase";
-import Navbar from "./Navbar";
-import Link from "./Link";
+import Navbar from "../components/Navbar";
+import Link from "../components/Link";
 import { genres } from "./Create";
 import { LoaderIcon } from "./Edit";
-import { Helmet } from "react-helmet";
-import { appName } from "../config";
+import { useRouter } from "next/router";
+import SEO from "../components/Helmet";
 
 const Join = () => {
   const { user } = useAuth();
@@ -20,11 +19,9 @@ export const JoinRequest = () => {
   const { user } = useAuth();
   return user ? <JoinRequestBody /> : <NotSignedIn />;
 };
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
 const JoinBody = () => {
-  const { id, uuid } = useParams();
+  const router = useRouter();
+  const { id, uuid } = router.query;
   const [uid, setUid] = useState("");
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
@@ -47,9 +44,7 @@ const JoinBody = () => {
   }, [id, uuid]);
   return (
     <div>
-      <Helmet>
-        <title>{`${appName} - Join`}</title>
-      </Helmet>
+      <SEO title="Join" />
       <Navbar />
       <div className="main">
         {data.joinID === uid && !error ? (
@@ -65,7 +60,8 @@ const JoinBody = () => {
   );
 };
 const JoinRequestBody = () => {
-  const { id } = useParams();
+  const router = useRouter();
+  const { id } = router.query;
   const [data, setData] = useState({});
   const [error, setError] = useState(false);
 
@@ -85,9 +81,7 @@ const JoinRequestBody = () => {
   }, [id]);
   return (
     <div>
-      <Helmet>
-        <title>{`${appName} - Join`}</title>
-      </Helmet>
+      <SEO title="Join" />
       <Navbar />
       {Object.keys(data).length !== 0 && (
         <div className="main">
@@ -103,8 +97,8 @@ const JoinRequestBody = () => {
 };
 const Card = ({ data }) => {
   const { user } = useAuth();
-  let query = useQuery();
-  const history = useHistory();
+  const history = useRouter();
+  const { invite } = history.query;
   const [loading, setLoading] = useState(false);
   const [req, setRequest] = useState(false);
   const join = () => {
@@ -219,7 +213,7 @@ const Card = ({ data }) => {
         ))}
       </div>
       <hr />
-      {query.get("invite") === "true" ? (
+      {invite === "true" ? (
         <button
           disabled={data.uids.includes(user.uid)}
           onClick={join}

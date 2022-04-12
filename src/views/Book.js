@@ -1,66 +1,70 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "../components/Link";
+import Link from "../components/Link";
 import FeatherIcon from "feather-icons-react";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
-import { Helmet } from "react-helmet";
 import { appName } from "../config";
 import ClickAwayListener from "react-click-away-listener";
 import { ReportDialog } from "../components/Feed";
 import SEO from "../components/Helmet";
-import { createMarkup } from "../utils/utils";
+import {
+  capitalize,
+  createMarkup,
+  joinObjects,
+  parseHTMLString,
+} from "../utils/utils";
 
-const Book = () => {
-  const { id } = useParams();
+const Book = ({ id, data, error }) => {
   const { user } = useAuth();
-  const [data, setData] = useState({
-    title: "Loading",
-    body: "Loading",
-    likes: [],
-  });
   const [like, setLike] = useState(false);
-  const [error, setError] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    let docRef = db.collection("published").doc(id);
-    docRef.get().then((doc) => {
-      if (doc.exists) {
-        setData(doc.data());
-        if (user && doc.data().likes.includes(user.uid)) setLike(true);
-      } else setError(true);
-    });
-  }, []);
+    if (user && data && data.likes.includes(user.uid)) setLike(true);
+  }, [data]);
+
   const handleClose = () => setOpen(false);
-  const likeAdd = () => {
+
+  const likeAdd = (add = true) => {
     db.collection("published")
       .doc(id)
       .set(
         {
-          likes: timestamp.arrayUnion(user.uid),
+          likes: add
+            ? timestamp.arrayUnion(user.uid)
+            : timestamp.arrayRemove(user.uid),
         },
         { merge: true }
       )
       .catch((err) => console.error(err));
   };
-  const likeRemove = () => {
-    db.collection("published")
-      .doc(id)
-      .set(
-        {
-          likes: timestamp.arrayRemove(user.uid),
-        },
-        { merge: true }
-      )
-      .catch((err) => console.error(err));
+
+  const share = () => {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: `${capitalize(data.title)} - ${appName}`,
+          text: `${user.displayName} shared ${capitalize(
+            data.title
+          )} - ${appName}`,
+          url: `/book/${id}`,
+        })
+        .then(() => console.log("shared"))
+        .catch((err) => console.error(err));
+    }
   };
   return (
     <div>
       <SEO
-        title={data.title.replace(/\w\S*/g, (w) =>
-          w.replace(/^\w/, (c) => c.toUpperCase())
-        )}
+        title={`${capitalize(data.title)} - A Story by ${joinObjects(
+          data.authors,
+          "displayName"
+        )}`}
+        description={`"${capitalize(data.title)}" by ${joinObjects(
+          data.authors,
+          "displayName"
+        )} · ${parseHTMLString(data.synopsis)}`}
       />
       <Navbar />
       <div className="main">
@@ -98,7 +102,7 @@ const Book = () => {
                   size="15"
                   style={{ marginRight: "5px" }}
                 />
-                {0 || data.likes.length}
+                {data.likes.length || 0}
               </div>
             </div>
             <hr />
@@ -127,7 +131,7 @@ const Book = () => {
                       className="icon-button"
                       onClick={() => {
                         setLike(!like);
-                        like ? likeRemove() : likeAdd();
+                        like ? likeAdd(false) : likeAdd();
                       }}>
                       <FeatherIcon
                         icon="heart"
@@ -138,24 +142,7 @@ const Book = () => {
                     <div
                       title="Share"
                       className="icon-button"
-                      onClick={() => {
-                        if (navigator.share) {
-                          navigator
-                            .share({
-                              title: `${data.title.replace(/\w\S*/g, (w) =>
-                                w.replace(/^\w/, (c) => c.toUpperCase())
-                              )} - ${appName}`,
-                              text: `${
-                                user.displayName
-                              } shared ${data.title.replace(/\w\S*/g, (w) =>
-                                w.replace(/^\w/, (c) => c.toUpperCase())
-                              )} - ${appName}`,
-                              url: `/book/${id}`,
-                            })
-                            .then(() => console.log("shared"))
-                            .catch((err) => console.error(err));
-                        }
-                      }}>
+                      onClick={() => share()}>
                       <FeatherIcon icon="share-2" />
                     </div>
                   </div>
