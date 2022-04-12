@@ -7,13 +7,7 @@ import { db, timestamp } from "../firebase";
 import { appName } from "../config";
 import ClickAwayListener from "react-click-away-listener";
 import { ReportDialog } from "../components/Feed";
-import SEO from "../components/Helmet";
-import {
-  capitalize,
-  createMarkup,
-  joinObjects,
-  parseHTMLString,
-} from "../utils/utils";
+import { capitalize, createMarkup } from "../utils/utils";
 
 const Book = ({ id, data, error }) => {
   const { user } = useAuth();
@@ -56,16 +50,6 @@ const Book = ({ id, data, error }) => {
   };
   return (
     <div>
-      <SEO
-        title={`${capitalize(data.title)} - A Story by ${joinObjects(
-          data.authors,
-          "displayName"
-        )}`}
-        description={`"${capitalize(data.title)}" by ${joinObjects(
-          data.authors,
-          "displayName"
-        )} · ${parseHTMLString(data.synopsis)}`}
-      />
       <Navbar />
       <div className="main">
         {error ? (

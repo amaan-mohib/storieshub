@@ -22,7 +22,10 @@ export async function getServerSideProps(context) {
     try {
       if (doc.exists) {
         data = doc.data();
-      } else error = true;
+      } else {
+        context.res.statusCode = 404;
+        error = true;
+      }
     } catch (err) {
       error = err;
     }
@@ -33,14 +36,18 @@ export async function getServerSideProps(context) {
       id,
       data: JSON.parse(JSON.stringify(data)),
       error,
-      title: `${capitalize(data.title)} - A Story by ${joinObjects(
-        data.authors,
-        "displayName"
-      )}`,
-      description: `"${capitalize(data.title)}" by ${joinObjects(
-        data.authors,
-        "displayName"
-      )} · ${parseHTMLString(data.synopsis)}`,
+      title: data
+        ? `${capitalize(data.title)} - A Story by ${joinObjects(
+            data.authors,
+            "displayName"
+          )}`
+        : "Book Not Found",
+      description: data
+        ? `"${capitalize(data.title)}" by ${joinObjects(
+            data.authors,
+            "displayName"
+          )} · ${parseHTMLString(data.synopsis)}`
+        : null,
       route: `/book/${id}`,
     },
   };

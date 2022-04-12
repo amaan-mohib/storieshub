@@ -7,9 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { genres } from "./Create";
 import { useProfile } from "../contexts/ProfileContext";
 import ClickAwayListener from "react-click-away-listener";
-import { appName } from "../config";
 import { useRouter } from "next/router";
-import SEO from "../components/Helmet";
 import { createMarkup, isS } from "../utils/utils";
 
 const ProfileBody = ({ uid }) => {
@@ -150,18 +148,6 @@ const ProfileBody = ({ uid }) => {
   return (
     <div>
       <Navbar />
-      <SEO
-        title={data.displayName}
-        description={`${data.displayName} has published ${
-          published.length
-        } stories on ${appName} with ${
-          data.followers ? data.followers.length : 0
-        } ${isS(data.followers, "follower")}\n Books: ${
-          published.length > 0
-            ? published.map((b) => `${b.title}`).join(", ")
-            : "None"
-        }`}
-      />
       <div className="main">
         {error ? (
           <div className="home-nav">

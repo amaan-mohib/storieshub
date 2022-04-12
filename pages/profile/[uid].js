@@ -27,7 +27,10 @@ export async function getServerSideProps(context) {
       const doc = await docRef.get();
       if (doc.exists) {
         data = doc.data();
-      } else error = true;
+      } else {
+        error = true;
+        context.res.statusCode = 404;
+      }
     } catch (err) {
       error = err;
     }
@@ -54,16 +57,18 @@ export async function getServerSideProps(context) {
       data: JSON.parse(JSON.stringify(data)),
       published: JSON.parse(JSON.stringify(published)),
       error,
-      title: data.displayName,
-      description: `${data.displayName} has published ${
-        published.length
-      } stories on ${appName} with ${
-        data.followers ? data.followers.length : 0
-      } ${isS(data.followers, "follower")}\n Books: ${
-        published.length > 0
-          ? published.map((b) => `${b.title}`).join(", ")
-          : "None"
-      }`,
+      title: data ? data.displayName : "User Not Found",
+      description: data
+        ? `${data.displayName} has published ${
+            published.length
+          } stories on ${appName} with ${
+            data.followers ? data.followers.length : 0
+          } ${isS(data.followers, "follower")}\n Books: ${
+            published.length > 0
+              ? published.map((b) => `${b.title}`).join(", ")
+              : "None"
+          }`
+        : null,
       route: `/profile/${uid}`,
     },
   };
