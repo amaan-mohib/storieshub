@@ -1,13 +1,17 @@
 import * as fs from "fs";
 import { webUrl } from "../config";
 
-const staticPaths = fs
-  .readdirSync(
-    {
-      development: "pages",
-      production: "./",
-    }[process.env.NODE_ENV]
-  )
+const dirents = fs.readdirSync(
+  {
+    development: "pages",
+    production: "./",
+  }[process.env.NODE_ENV],
+  { withFileTypes: true }
+);
+const fileNames = dirents
+  .filter((dirent) => dirent.isFile())
+  .map((dirent) => dirent.name);
+const staticPaths = fileNames
   .filter((staticPage) => {
     return ![
       "api",
@@ -17,7 +21,6 @@ const staticPaths = fs
       "sitemap.xml.js",
     ].includes(staticPage);
   })
-  .filter((staticPagePath) => staticPagePath.includes(".js"))
   .map((staticPagePath) => {
     const path = staticPagePath.replace(".js", "");
     const route = webUrl + `${path === "index" ? "" : "/" + path}`;
