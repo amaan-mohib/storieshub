@@ -4,7 +4,7 @@ import { webUrl } from "../config";
 const dirents = fs.readdirSync(
   {
     development: "pages",
-    production: "./",
+    production: "pages",
   }[process.env.NODE_ENV],
   { withFileTypes: true }
 );
