@@ -1,16 +1,7 @@
 // import * as fs from "fs";
 import { webUrl } from "../config";
 
-const fileNames = [
-  "browse",
-  "create",
-  "index",
-  "login",
-  "policies",
-  "settings",
-  "teams",
-  "terms",
-];
+const fileNames = ["browse", "create", "index", "policies", "teams", "terms"];
 const staticPaths = fileNames
   .filter((staticPage) => {
     return ![
@@ -25,7 +16,7 @@ const staticPaths = fileNames
     const path = staticPagePath;
     // .replace(".js", "");
     const route = webUrl + `${path === "index" ? "" : "/" + path}`;
-    return route;
+    return { route, freq: "yearly" };
   });
 
 export default staticPaths;

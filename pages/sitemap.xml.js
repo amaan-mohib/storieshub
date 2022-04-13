@@ -18,9 +18,9 @@ export const getServerSideProps = async ({ res }) => {
         .map((url) => {
           return `
           <url>
-          <loc>${url}</loc>
+          <loc>${url.route}</loc>
           <lastmod>${new Date().toISOString()}</lastmod>
-          <changefreq>monthly</changefreq>
+          <changefreq>${url.freq}</changefreq>
           <priority>1.0</priority>
           </url>
           `;
