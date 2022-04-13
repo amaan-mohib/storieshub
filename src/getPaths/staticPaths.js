@@ -2,7 +2,12 @@ import * as fs from "fs";
 import { webUrl } from "../config";
 
 const staticPaths = fs
-  .readdirSync("pages")
+  .readdirSync(
+    {
+      development: "pages",
+      production: "./",
+    }[process.env.NODE_ENV]
+  )
   .filter((staticPage) => {
     return ![
       "api",
