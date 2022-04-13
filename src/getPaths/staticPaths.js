@@ -4,13 +4,12 @@ import { webUrl } from "../config";
 const dirents = fs.readdirSync(
   {
     development: "pages",
-    production: "server/pages",
+    production: "./",
   }[process.env.NODE_ENV],
   { withFileTypes: true }
 );
-const fileNames = dirents
-  .filter((dirent) => dirent.isFile())
-  .map((dirent) => dirent.name);
+const fileNames = dirents.map((dirent) => dirent.name);
+//   .filter((dirent) => dirent.isFile())
 const staticPaths = fileNames
   .filter((staticPage) => {
     return ![
@@ -22,7 +21,8 @@ const staticPaths = fileNames
     ].includes(staticPage);
   })
   .map((staticPagePath) => {
-    const path = staticPagePath.replace(".js", "");
+    const path = staticPagePath;
+    // .replace(".js", "");
     const route = webUrl + `${path === "index" ? "" : "/" + path}`;
     return route;
   });
