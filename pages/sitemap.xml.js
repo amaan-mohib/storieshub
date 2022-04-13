@@ -1,4 +1,3 @@
-import React from "react";
 import dynamicPaths from "../src/getPaths/dynamicPaths";
 import staticPaths from "../src/getPaths/staticPaths";
 
