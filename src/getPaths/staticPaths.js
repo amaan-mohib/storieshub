@@ -1,15 +1,16 @@
-import * as fs from "fs";
+// import * as fs from "fs";
 import { webUrl } from "../config";
 
-const dirents = fs.readdirSync(
-  {
-    development: "pages",
-    production: "pages",
-  }[process.env.NODE_ENV],
-  { withFileTypes: true }
-);
-const fileNames = dirents.map((dirent) => dirent.name);
-//   .filter((dirent) => dirent.isFile())
+const fileNames = [
+  "browse",
+  "create",
+  "index",
+  "login",
+  "policies",
+  "settings",
+  "teams",
+  "terms",
+];
 const staticPaths = fileNames
   .filter((staticPage) => {
     return ![
