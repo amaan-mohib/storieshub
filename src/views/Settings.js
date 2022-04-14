@@ -5,6 +5,7 @@ import ToggleButton from "react-toggle-button";
 import ClickAwayListener from "react-click-away-listener";
 import SEO from "../components/Helmet";
 import { appName } from "../config";
+import Button from "../components/Buttons";
 
 export const light = {
   "--background": "hsl(43, 100%, 95%)",
@@ -95,11 +96,9 @@ const Settings = () => {
                 <hr />
                 <div className="dialog-actions">
                   <div>
-                    <button
-                      onClick={handleClose}
-                      className="button secondary-but">
+                    <Button secondary onClick={handleClose}>
                       Close
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

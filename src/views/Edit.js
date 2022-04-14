@@ -25,6 +25,7 @@ const Editor = dynamic(
   { ssr: false }
 );
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import Button from "../components/Buttons";
 
 const Edit = () => {
   const { user } = useAuth();
@@ -99,17 +100,7 @@ const TopComp = ({ data }) => {
     </>
   );
 };
-export const LoaderIcon = (
-  <div
-    className="loader"
-    style={{
-      width: "15px",
-      height: "15px",
-      borderWidth: "3px",
-      marginLeft: "5px",
-    }}
-  />
-);
+
 const TextEditor = ({ data }) => {
   const {
     title,
@@ -271,11 +262,9 @@ const TextEditor = ({ data }) => {
                   <hr />
                   <div className="dialog-actions">
                     <div>
-                      <button
-                        className="button secondary-but"
-                        onClick={() => setOpen(false)}>
+                      <Button secondary onClick={() => setOpen(false)}>
                         Close
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -288,20 +277,7 @@ const TextEditor = ({ data }) => {
                 <div>
                   <PublishForm
                     data={data}
-                    close1={
-                      <div
-                        className="icon-button"
-                        onClick={() => setPubOpen(false)}>
-                        <FeatherIcon icon="x" />
-                      </div>
-                    }
-                    close2={
-                      <button
-                        className="button secondary-but"
-                        onClick={() => setPubOpen(false)}>
-                        Close
-                      </button>
-                    }
+                    handleClose={() => setPubOpen(false)}
                   />
                 </div>
               </ClickAwayListener>
@@ -310,9 +286,7 @@ const TextEditor = ({ data }) => {
           <div className="feed sticky1" style={{ margin: 0 }}>
             <div className="footer">
               {book.leader === user.uid && (
-                <button
-                  className="button"
-                  style={{ marginRight: "10px" }}
+                <Button
                   onClick={() => {
                     if (!validation()) {
                       saveBook();
@@ -320,48 +294,42 @@ const TextEditor = ({ data }) => {
                     }
                   }}>
                   Publish
-                </button>
+                </Button>
               )}
               {book.leader === user.uid ? (
-                <button
-                  disabled={loading}
+                <Button
+                  loading={loading && save}
                   onClick={() => {
                     if (!validation()) {
                       setSave(true);
                       saveBook();
                     }
                   }}
-                  className="button secondary-but but-outline"
-                  style={{ marginRight: "10px" }}>
+                  outlined>
                   Save
-                  {loading && save && LoaderIcon}
-                </button>
+                </Button>
               ) : (
                 <div className="footer">
-                  <button
-                    disabled={loading}
+                  <Button
+                    loading={loading && save}
                     onClick={() => {
                       if (!validation()) {
                         setSave(true);
                         savePr();
                       }
-                    }}
-                    className="button"
-                    style={{ marginRight: "10px" }}>
+                    }}>
                     Submit
-                    {loading && save && LoaderIcon}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => {
                       setOpen(true);
                     }}
-                    className="button secondary-but but-outline"
-                    style={{ marginRight: "10px" }}>
+                    outlined>
                     Draft
-                  </button>
+                  </Button>
                 </div>
               )}
-              <button
+              <Button
                 onClick={() => {
                   setPreview(true);
                   console.log(previewRef.current);
@@ -369,9 +337,9 @@ const TextEditor = ({ data }) => {
                     previewRef.current.scrollIntoView({ behavior: "smooth" });
                   }, 100);
                 }}
-                className="button secondary-but">
+                secondary>
                 Preview
-              </button>
+              </Button>
             </div>
             {data.updatedAt && (
               <p

@@ -7,9 +7,9 @@ import { db, timestamp } from "../firebase";
 import Navbar from "../components/Navbar";
 import Link from "../components/Link";
 import { genres } from "./Create";
-import { LoaderIcon } from "./Edit";
 import { useRouter } from "next/router";
 import SEO from "../components/Helmet";
+import Button from "../components/Buttons";
 
 const Join = () => {
   const { user } = useAuth();
@@ -214,29 +214,25 @@ const Card = ({ data }) => {
       </div>
       <hr />
       {invite === "true" ? (
-        <button
+        <Button
           disabled={data.uids.includes(user.uid)}
           onClick={join}
-          className="button"
-          style={{ justifyContent: "center" }}>
-          <FeatherIcon icon="plus" />
+          loading={loading}
+          startIcon={<FeatherIcon icon="plus" />}>
           Join
-          {loading && LoaderIcon}
-        </button>
+        </Button>
       ) : (
-        <button
+        <Button
+          startIcon={<FeatherIcon icon="plus" />}
+          loading={loading}
           disabled={
             (data.uids && data.uids.includes(user.uid)) ||
             (data.requestUids && data.requestUids.includes(user.uid)) ||
             req
           }
-          onClick={request}
-          className="button"
-          style={{ justifyContent: "center" }}>
-          <FeatherIcon icon="plus" />
+          onClick={request}>
           Request join
-          {loading && LoaderIcon}
-        </button>
+        </Button>
       )}
     </div>
   );

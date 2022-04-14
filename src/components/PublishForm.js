@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { usePreview } from "../contexts/PreviewContext";
 import ToggleButton from "react-toggle-button";
 import { genres } from "../views/Create";
-import { LoaderIcon } from "../views/Edit";
 import { db, timestamp } from "../firebase";
 import { useRouter } from "next/router";
+import Button from "./Buttons";
+import FeatherIcon from "feather-icons-react";
 
-const PublishForm = ({ close1 = <div></div>, close2 = <div></div>, data }) => {
+const PublishForm = ({ handleClose, data }) => {
   const history = useRouter();
   const { id } = history.query;
   const [complete, setComp] = useState(false);
@@ -89,7 +90,9 @@ const PublishForm = ({ close1 = <div></div>, close2 = <div></div>, data }) => {
     <div className="dialog">
       <div className="dialog-title">
         <h1>Publish</h1>
-        {close1}
+        <div className="icon-button" onClick={handleClose}>
+          <FeatherIcon icon="x" />
+        </div>
       </div>
       <hr />
       <div className="publish dialog-body">
@@ -140,18 +143,19 @@ const PublishForm = ({ close1 = <div></div>, close2 = <div></div>, data }) => {
       <div className="dialog-actions">
         <div>
           {!next ? (
-            <button
-              className="button"
+            <Button
+              loading={loading}
               onClick={() => {
                 if (!validation()) {
                   publish();
                 }
               }}>
               Publish
-              {loading && LoaderIcon}
-            </button>
+            </Button>
           ) : null}
-          {close2}
+          <Button secondary onClick={handleClose}>
+            Close
+          </Button>
         </div>
       </div>
     </div>

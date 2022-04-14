@@ -140,23 +140,7 @@ const Book = ({ id, data, error }) => {
                     <div className="dialog-bg">
                       <ClickAwayListener onClickAway={handleClose}>
                         <div>
-                          <ReportDialog
-                            data={data}
-                            close1={
-                              <div
-                                className="icon-button"
-                                onClick={handleClose}>
-                                <FeatherIcon icon="x" />
-                              </div>
-                            }
-                            close2={
-                              <button
-                                className="button secondary-but"
-                                onClick={handleClose}>
-                                Close
-                              </button>
-                            }
-                          />
+                          <ReportDialog data={data} handleClose={handleClose} />
                         </div>
                       </ClickAwayListener>
                     </div>

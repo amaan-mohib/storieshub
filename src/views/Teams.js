@@ -7,9 +7,9 @@ import FeatherIcon from "feather-icons-react";
 import { db } from "../firebase";
 import { genres } from "./Create";
 import short from "short-uuid";
-import { LoaderIcon } from "./Edit";
 import SEO from "../components/Helmet";
 import { useRouter } from "next/router";
+import Button from "../components/Buttons";
 
 const Teams = () => {
   const { user } = useAuth();
@@ -77,13 +77,9 @@ const Groups = () => {
                 className="textfield"
                 style={{ width: "inherit" }}
               />
-              <button disabled={loading} onClick={joinCode} className="button">
-                {loading ? (
-                  <div style={{ marginLeft: "-5px" }}>{LoaderIcon}</div>
-                ) : (
-                  "Join"
-                )}
-              </button>
+              <Button onClick={joinCode} loading={loading}>
+                Join
+              </Button>
             </div>
             {error && <p className="error">Invalid code</p>}
           </div>
@@ -138,13 +134,12 @@ const Team = ({ data, divKey }) => {
         ))}
       </div>
       <hr />
-      <Link
+      <Button
+        as={Link}
         href={`/join/${data.teamId}`}
-        className="button"
-        style={{ justifyContent: "center" }}>
-        <FeatherIcon icon="plus" />
-        Request join
-      </Link>
+        startIcon={<FeatherIcon icon="plus" />}>
+        Request Join
+      </Button>
     </div>
   );
 };

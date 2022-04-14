@@ -5,6 +5,7 @@ import { db } from "../firebase";
 import FeatherIcon from "feather-icons-react";
 import { useRouter } from "next/router";
 import { createMarkup } from "../utils/utils";
+import Button from "./Buttons";
 
 const Prs = () => {
   const { setPrs } = usePreview();
@@ -86,22 +87,15 @@ const Prs = () => {
                 <hr />
                 <div className="dialog-actions">
                   <div>
-                    <button
-                      className="button secondary-but but-outline"
+                    <Button
+                      outlined
+                      endIcon={copied && <FeatherIcon icon="check" />}
                       onClick={copy}>
-                      Copy{" "}
-                      {copied && (
-                        <FeatherIcon
-                          icon="check"
-                          style={{ margin: "0 0 0 5px" }}
-                        />
-                      )}
-                    </button>
-                    <button
-                      className="button secondary-but"
-                      onClick={handleClose}>
+                      Copy
+                    </Button>
+                    <Button secondary onClick={handleClose}>
                       Close
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

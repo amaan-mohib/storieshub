@@ -6,8 +6,9 @@ import { SmallLogin } from "./Login";
 import Navbar from "../components/Navbar";
 import FeatherIcon from "feather-icons-react";
 import { db } from "../firebase";
-import { LoaderIcon } from "./Edit";
 import SEO from "../components/Helmet";
+import Button from "../components/Buttons";
+import Loader from "../components/Buttons/Loder";
 
 const Home = () => {
   const { user } = useAuth();
@@ -61,14 +62,18 @@ export const Feeds = () => {
         <div className="feeds">
           {user && (
             <div className="feed top-buts">
-              <Link href="/create" className="button">
-                <FeatherIcon icon="plus" />
-                <p>Create</p>
-              </Link>
-              <Link href="/teams" className="button">
-                <FeatherIcon icon="users" />
-                <p>Join</p>
-              </Link>
+              <Button
+                as={Link}
+                href="/create"
+                startIcon={<FeatherIcon icon="plus" />}>
+                Create
+              </Button>
+              <Button
+                as={Link}
+                href="/teams"
+                startIcon={<FeatherIcon icon="users" />}>
+                Join
+              </Button>
             </div>
           )}
           <div style={{ display: "flex", margin: "10px 0" }}>
@@ -101,7 +106,7 @@ export const Feeds = () => {
                 alignItems: "center",
                 marginRight: "-5px",
               }}>
-              {LoaderIcon}
+              {<Loader />}
             </div>
           )}
         </div>

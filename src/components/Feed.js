@@ -6,6 +6,7 @@ import { db, timestamp } from "../firebase";
 import ClickAwayListener from "react-click-away-listener";
 import { genres } from "../views/Create";
 import { createMarkup } from "../utils/utils";
+import Button from "./Buttons";
 
 const Feed = (props) => {
   const [like, setLike] = useState(false);
@@ -52,12 +53,12 @@ const Feed = (props) => {
         <div className="cover">
           <FeatherIcon icon="eye-off" />
           <p>This story contains strong language</p>
-          <button
+          <Button
+            outlined
             style={{ marginTop: "15px" }}
-            onClick={() => setAllowed(true)}
-            className="button secondary-but but-outline">
+            onClick={() => setAllowed(true)}>
             Continue
-          </button>
+          </Button>
         </div>
       )}
       <div className="feed-title">
@@ -125,21 +126,7 @@ const Feed = (props) => {
         <div className="dialog-bg" style={{ marginTop: "-5px", top: "50.7%" }}>
           <ClickAwayListener onClickAway={handleClose}>
             <div>
-              <ReportDialog
-                data={props.data}
-                close1={
-                  <div className="icon-button" onClick={handleClose}>
-                    <FeatherIcon icon="x" />
-                  </div>
-                }
-                close2={
-                  <button
-                    className="button secondary-but"
-                    onClick={handleClose}>
-                    Close
-                  </button>
-                }
-              />
+              <ReportDialog data={props.data} handleClose={handleClose} />
             </div>
           </ClickAwayListener>
         </div>
@@ -147,7 +134,7 @@ const Feed = (props) => {
     </div>
   );
 };
-export const ReportDialog = ({ close1, close2, data }) => {
+export const ReportDialog = ({ close1, data, handleClose }) => {
   const reports = [
     "It's spam",
     "Hate speech",
@@ -192,7 +179,9 @@ export const ReportDialog = ({ close1, close2, data }) => {
     <div className="dialog">
       <div className="dialog-title">
         <h1>Report</h1>
-        {close1}
+        <div className="icon-button" onClick={handleClose}>
+          <FeatherIcon icon="x" />
+        </div>
       </div>
       <hr />
       <div className="dialog-body">
@@ -229,16 +218,16 @@ export const ReportDialog = ({ close1, close2, data }) => {
           </div>
         )}
         <div>
-          {checkedReport.length > 0 && (
-            <button className="button" onClick={report}>
-              Report
-            </button>
-          )}
+          {checkedReport.length > 0 && <Button onClick={report}>Report</Button>}
         </div>
       </div>
       <hr />
       <div className="dialog-actions">
-        <div>{close2}</div>
+        <div>
+          <Button onClick={handleClose} secondary>
+            Close
+          </Button>
+        </div>
       </div>
     </div>
   );

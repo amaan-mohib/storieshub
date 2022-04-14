@@ -3,8 +3,8 @@ import { usePreview } from "../contexts/PreviewContext";
 import FeatherIcon from "feather-icons-react";
 import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
-import { LoaderIcon } from "../views/Edit";
 import { useRouter } from "next/router";
+import Loader from "./Buttons/Loder";
 
 const MessageMain = () => {
   const { messages, setRead, read } = usePreview();
@@ -116,11 +116,7 @@ const MessageMain = () => {
           disabled={input.trim() === ""}
           className="icon-button"
           onClick={send}>
-          {!loading ? (
-            <FeatherIcon icon="send" />
-          ) : (
-            <div style={{ marginLeft: "-5px" }}>{LoaderIcon}</div>
-          )}
+          {!loading ? <FeatherIcon icon="send" /> : <Loader size={25} />}
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import FeatherIcon from "feather-icons-react";
 import ClickAwayListener from "react-click-away-listener";
 import { useRouter } from "next/router";
+import Button from "./Buttons";
 
 const Navbar = () => {
   const { user, logout } = useAuth();
@@ -68,6 +69,7 @@ const Navbar = () => {
                   icon={item.icon}
                   primary={item.primary}
                   link={item.link}
+                  onClick={item.onClick}
                 />
               ))}
               <hr />
@@ -93,9 +95,9 @@ const Navbar = () => {
           </NavItem>
         </div>
       ) : (
-        <Link href={`/login?from=${router.asPath}`} className="button">
-          Log in
-        </Link>
+        <Button as={Link} href={`/login?from=${router.asPath}`}>
+          Log In
+        </Button>
       )}
     </nav>
   );

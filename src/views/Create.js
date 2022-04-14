@@ -6,6 +6,9 @@ import Link from "../components/Link";
 import FormProvider, { useForm } from "../contexts/CreateFormContext";
 import { db, timestamp } from "../firebase";
 import { useAuth } from "../contexts/AuthContext";
+import Button from "../components/Buttons";
+import { useRouter } from "next/router";
+import SEO from "../components/Helmet";
 // import { appName } from "../config";
 // import { Helmet } from "react-helmet";
 
@@ -13,9 +16,7 @@ const Create = () => {
   return (
     <FormProvider>
       <div>
-        {/* <Helmet>
-          <title>{`${appName} - Create`}</title>
-        </Helmet> */}
+        <SEO title="Create" />
         <Navbar />
         <div className="main" style={{ flexDirection: "column" }}>
           <Title />
@@ -27,7 +28,7 @@ const Create = () => {
 };
 const Footer = () => {
   const { title, tags, synopsis, genre, nsfw, error, setError } = useForm();
-  // const history = useHistory();
+  const history = useRouter();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const validation = () => {
@@ -43,14 +44,12 @@ const Footer = () => {
     <div className="feed">
       {error && <div className="error">*Please fill the required fields</div>}
       <div className="footer">
-        <Link
-          href="/"
-          className="button secondary-but"
-          style={{ marginRight: "10px" }}>
+        <Button secondary as={Link} href="/">
           Cancel
-        </Link>
-        <button
-          className="button"
+        </Button>
+        <Button
+          loading={loading}
+          endIcon={<FeatherIcon icon="chevron-right" />}
           onClick={() => {
             if (!validation()) {
               setLoading(true);
@@ -86,7 +85,7 @@ const Footer = () => {
                     )
                     .then(() => {
                       setLoading(false);
-                      // history.push(`/edit/${docRef.id}`);
+                      history.push(`/edit/${docRef.id}`);
                       console.log("added book id to user");
                     })
                     .catch((err) => console.error(err));
@@ -95,18 +94,7 @@ const Footer = () => {
             }
           }}>
           Next
-          {loading && (
-            <div
-              className="loader"
-              style={{
-                width: "15px",
-                height: "15px",
-                borderWidth: "3px",
-                marginLeft: "5px",
-              }}
-            />
-          )}
-        </button>
+        </Button>
       </div>
     </div>
   );

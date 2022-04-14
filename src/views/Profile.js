@@ -9,6 +9,7 @@ import { useProfile } from "../contexts/ProfileContext";
 import ClickAwayListener from "react-click-away-listener";
 import { useRouter } from "next/router";
 import { createMarkup, isS } from "../utils/utils";
+import Button from "../components/Buttons";
 
 const ProfileBody = ({ uid }) => {
   const { user } = useAuth();
@@ -199,35 +200,24 @@ const ProfileBody = ({ uid }) => {
                 <div className="dialog-bg">
                   <ClickAwayListener onClickAway={handleClose}>
                     <div>
-                      <FollowDialog
-                        close1={
-                          <div className="icon-button" onClick={handleClose}>
-                            <FeatherIcon icon="x" />
-                          </div>
-                        }
-                        close2={
-                          <button
-                            className="button secondary-but"
-                            onClick={handleClose}>
-                            Close
-                          </button>
-                        }
-                      />
+                      <FollowDialog handleClose={handleClose} />
                     </div>
                   </ClickAwayListener>
                 </div>
               )}
               {user && user.uid !== uid && (
                 <div>
-                  <button
+                  <Button
+                    outlined
                     onClick={() => {
                       followed ? unfollowSate() : followSate();
                     }}
-                    style={{ marginTop: "10px" }}
-                    className="button secondary-but but-outline">
-                    <FeatherIcon icon={followed ? "user-x" : "user-plus"} />
+                    startIcon={
+                      <FeatherIcon icon={followed ? "user-x" : "user-plus"} />
+                    }
+                    style={{ marginTop: "10px" }}>
                     {followed ? "Unfollow" : "Follow"}
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
@@ -384,7 +374,7 @@ const Published = () => {
     </div>
   );
 };
-const FollowDialog = ({ close1, close2 }) => {
+const FollowDialog = ({ handleClose, close2 }) => {
   const { uid } = useRouter().query;
   const { user } = useAuth();
   const [tab, setTab] = useState(0);
@@ -519,7 +509,9 @@ const FollowDialog = ({ close1, close2 }) => {
     <div className="dialog">
       <div className="dialog-title">
         <h1>{tab === 0 ? "Followers" : "Following"}</h1>
-        {close1}
+        <div className="icon-button" onClick={handleClose}>
+          <FeatherIcon icon="x" />
+        </div>
       </div>
       <hr />
       <div className="dialog-body">
@@ -587,7 +579,11 @@ const FollowDialog = ({ close1, close2 }) => {
       </div>
       <hr />
       <div className="dialog-actions">
-        <div>{close2}</div>
+        <div>
+          <Button secondary onClick={handleClose}>
+            Close
+          </Button>
+        </div>
       </div>
     </div>
   );

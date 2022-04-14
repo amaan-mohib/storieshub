@@ -7,7 +7,7 @@ import { db, timestamp } from "../firebase";
 import Link from "./Link";
 import FeatherIcon from "feather-icons-react";
 import { webUrl } from "../config";
-import { LoaderIcon } from "../views/Edit";
+import Button from "./Buttons";
 
 const Members = () => {
   const {
@@ -184,75 +184,86 @@ const Members = () => {
               </a>
             </p>
           )}
-          {show ? (
-            <button
-              className="button secondary-but but-outline"
-              onClick={generateUuid}
-              style={{ justifyContent: "center", marginTop: "10px" }}>
-              <FeatherIcon icon="link-2" />
-              Invite via link
-            </button>
-          ) : (
-            <>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}>
-                <button
-                  className="button secondary-but"
-                  onClick={() => {
-                    copy(`${shortId}`);
-                    setCopied(true);
-                    setTimeout(() => {
-                      setCopied(false);
-                    }, 1000);
-                  }}
-                  style={{ justifyContent: "center", marginTop: "10px" }}>
-                  <FeatherIcon icon="copy" />
-                  Copy Code{" "}
-                  {copied && (
-                    <FeatherIcon icon="check" style={{ margin: "0 0 0 5px" }} />
-                  )}
-                </button>
-                <button
-                  className="button secondary-but"
-                  onClick={() => {
-                    share(
-                      `${process.env.PUBLIC_URL}/join/${id}/${shortId}?invite=true`
-                    );
-                  }}
-                  style={{ justifyContent: "center", marginTop: "10px" }}>
-                  <FeatherIcon icon="share-2" />
-                  Share
-                </button>
-              </div>
-              <button
-                className="button secondary-but but-outline"
+          <div
+            style={{
+              marginTop: "10px",
+              display: "flex",
+              flexDirection: "column",
+            }}>
+            {show ? (
+              <Button
+                outlined
+                startIcon={<FeatherIcon icon="link-2" />}
                 onClick={generateUuid}
-                style={{ justifyContent: "center", marginTop: "10px" }}>
-                <FeatherIcon icon="refresh-ccw" />
-                Generate new link
-              </button>
-            </>
-          )}
+                style={{ marginTop: "10px" }}>
+                Invite via link
+              </Button>
+            ) : (
+              <>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    columnGap: "10px",
+                  }}>
+                  <Button
+                    secondary
+                    fullWidth
+                    startIcon={
+                      copied ? (
+                        <FeatherIcon icon="check" />
+                      ) : (
+                        <FeatherIcon icon="copy" />
+                      )
+                    }
+                    onClick={() => {
+                      copy(`${shortId}`);
+                      setCopied(true);
+                      setTimeout(() => {
+                        setCopied(false);
+                      }, 1000);
+                    }}>
+                    Copy Code
+                  </Button>
+                  <Button
+                    fullWidth
+                    secondary
+                    onClick={() => {
+                      share(
+                        `${process.env.PUBLIC_URL}/join/${id}/${shortId}?invite=true`
+                      );
+                    }}
+                    startIcon={<FeatherIcon icon="share-2" />}>
+                    Share
+                  </Button>
+                </div>
+                <Button
+                  outlined
+                  startIcon={<FeatherIcon icon="refresh-ccw" />}
+                  onClick={generateUuid}
+                  style={{ marginTop: "10px" }}>
+                  Generate new link
+                </Button>
+              </>
+            )}
+          </div>
           {!requested ? (
-            <button
-              className="button secondary-but but-outline"
+            <Button
+              outlined
               onClick={requestMembers}
-              style={{ justifyContent: "center", marginTop: "10px" }}>
-              <FeatherIcon icon="user-plus" />
-              Request Members{loading && LoaderIcon}
-            </button>
+              startIcon={<FeatherIcon icon="user-plus" />}
+              loading={loading}
+              style={{ marginTop: "10px" }}>
+              Request Members
+            </Button>
           ) : (
-            <button
-              className="button secondary-but but-outline"
+            <Button
+              outlined
+              startIcon={<FeatherIcon icon="user-x" />}
               onClick={deleteRequest}
-              style={{ justifyContent: "center", marginTop: "10px" }}>
-              <FeatherIcon icon="user-x" />
+              style={{ marginTop: "10px" }}>
               Remove Request
-            </button>
+            </Button>
           )}
         </div>
       )}
