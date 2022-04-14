@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { appName } from "../../src/config";
 import ProfileProvider, { useProfile } from "../../src/contexts/ProfileContext";
 import { db } from "../../src/firebase";
-import { isS } from "../../src/utils/utils";
+import { capitalize, isS } from "../../src/utils/utils";
 import ProfileBody from "../../src/views/Profile";
 
 const Profile = ({ uid, data, published, error }) => {
@@ -59,13 +59,16 @@ export async function getServerSideProps(context) {
       error,
       title: data ? data.displayName : "User Not Found",
       description: data
-        ? `${data.displayName} has published ${
-            published.length
-          } stories on ${appName} with ${
+        ? `${data.displayName} has published ${published.length} ${isS(
+            published,
+            "stor",
+            "ies",
+            "y"
+          )} on ${appName} with ${
             data.followers ? data.followers.length : 0
-          } ${isS(data.followers, "follower")}\n Books: ${
+          } ${isS(data.followers, "follower")}, Published books: ${
             published.length > 0
-              ? published.map((b) => `${b.title}`).join(", ")
+              ? published.map((b) => `${capitalize(b.title)}`).join(", ")
               : "None"
           }`
         : null,

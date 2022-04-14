@@ -1,6 +1,5 @@
 import React from "react";
 import StyledButton from "./styles";
-import FeatherIcon from "feather-icons-react";
 import Loader from "./Loder";
 
 const Button = ({

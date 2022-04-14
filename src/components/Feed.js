@@ -134,7 +134,7 @@ const Feed = (props) => {
     </div>
   );
 };
-export const ReportDialog = ({ close1, data, handleClose }) => {
+export const ReportDialog = ({ data, handleClose }) => {
   const reports = [
     "It's spam",
     "Hate speech",
