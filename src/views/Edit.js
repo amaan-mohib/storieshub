@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { convertToRaw, EditorState } from "draft-js";
 import { useAuth } from "../contexts/AuthContext";
@@ -26,13 +26,25 @@ const Editor = dynamic(
 );
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import Button from "../components/Buttons";
+import { types } from "../contexts/PreviewReducer";
 
 const Edit = () => {
+  return (
+    <PreviewProvider>
+      <SEO title="Edit" />
+      <Navbar />
+      <EditComp />
+    </PreviewProvider>
+  );
+};
+
+const EditComp = () => {
   const { user } = useAuth();
+  const { dispatch } = usePreview();
   const router = useRouter();
   const { id } = router.query;
   const [error, setError] = useState(false);
-  const [data, setData] = useState({});
+
   useEffect(() => {
     let docRef = db.collection("books").doc(id);
     docRef
@@ -42,7 +54,7 @@ const Edit = () => {
           if (!doc.data().uids.includes(user.uid)) {
             router.replace("/");
           }
-          setData(doc.data());
+          dispatch({ type: types.UPDATE_BOOK, payload: doc.data() });
           // console.log(doc.data());
         } else {
           setError(true);
@@ -50,22 +62,12 @@ const Edit = () => {
       })
       .catch((err) => console.error(err));
   }, [id, user]);
-  return (
-    <PreviewProvider>
-      <div>
-        <SEO title="Edit" />
-        <Navbar />
-        {error ? (
-          <div className="main">No book with ID {id}</div>
-        ) : (
-          Object.keys(data).length !== 0 && <TopComp data={data} />
-        )}
-      </div>
-    </PreviewProvider>
-  );
+
+  if (error) return <div className="main">No book with ID {id}</div>;
+  return <TopComp />;
 };
-const TopComp = ({ data }) => {
-  const { setMessages, setRead } = usePreview();
+const TopComp = () => {
+  const { dispatch } = usePreview();
   const router = useRouter();
   const { id } = router.query;
   const { user } = useAuth();
@@ -77,13 +79,14 @@ const TopComp = ({ data }) => {
       .then((doc) => {
         if (doc.exists) {
           let uid = user.uid;
-          doc.data()[uid] && setRead(doc.data()[uid]);
+          doc.data()[uid] &&
+            dispatch({ type: types.SET_READ, payload: doc.data()[uid] });
         }
       })
       .catch((err) => console.error(err));
     let unsub = msgRef.orderBy("date", "desc").onSnapshot((query) => {
       const docs = query.docs.map((doc) => doc.data());
-      setMessages(docs);
+      dispatch({ type: types.SET_MESSAGES, payload: docs });
     });
     return () => {
       unsub && unsub();
@@ -92,41 +95,17 @@ const TopComp = ({ data }) => {
   return (
     <>
       <div className="create">
-        <TextEditor data={data} />
+        <TextEditor />
       </div>
       <div className="create-mob">
-        <Mobile data={data} />
+        <Mobile />
       </div>
     </>
   );
 };
 
-const TextEditor = ({ data }) => {
-  const {
-    title,
-    setTitle,
-    synopsis,
-    setSynopsis,
-    body,
-    setBody,
-    error,
-    setError,
-    setOtherData,
-    setUuid,
-    tags,
-    setTags,
-    genre,
-    setGenre,
-    book,
-    setBook,
-    render,
-    setRender,
-    mobileBody,
-    setPrs,
-    setRequested,
-    setRequests,
-    setNsfw,
-  } = usePreview();
+const TextEditor = () => {
+  const { state, dispatch } = usePreview();
   const { user } = useAuth();
   const previewRef = useRef(null);
   const editorRef = useRef(null);
@@ -137,63 +116,59 @@ const TextEditor = ({ data }) => {
   const [open, setOpen] = useState(false);
   const [publishOpen, setPubOpen] = useState(false);
   const [editorState, setEditorState] = useState(() =>
-    EditorState.createWithContent(convertFromHTML(body))
+    EditorState.createWithContent(convertFromHTML(""))
   );
-  const handleEditorState = (state) => {
-    setEditorState(state);
-    setBody(draftToHtml(convertToRaw(editorState.getCurrentContent())));
-  };
+
+  const handleEditorState = useCallback(
+    (state) => {
+      let body = draftToHtml(convertToRaw(editorState.getCurrentContent()));
+      setEditorState(state);
+      dispatch({ type: types.UPDATE_BODY, payload: body });
+    },
+    [editorState]
+  );
+
   useEffect(() => {
-    if (render === 0 && Object.keys(data).length !== 0) {
-      setTitle(data.title);
-      data.synopsis && setSynopsis(data.synopsis);
-      if (data) {
-        setBook(data);
-      }
-      if (data.body && data.leader === user.uid) {
-        setBody(data.body);
-        setEditorState(() =>
-          EditorState.createWithContent(convertFromHTML(data.body))
-        );
-      }
-      data.authors && setOtherData(data.authors);
-      data.tags && setTags(data.tags);
-      data.genre && setGenre(data.genre);
-      data.joinID && setUuid(data.joinID);
-      data.updatedAt && setUpdate(data.updatedAt.toDate().toLocaleString());
-      data.pr && setPrs(data.pr);
-      data.requested && setRequested(data.requested);
-      data.requests && setRequests(data.requests);
-      data.nsfw && setNsfw(data.nsfw);
-      setEditorState((e) => EditorState.moveFocusToEnd(e));
-      setRender(1);
+    console.log(state.book.leader);
+    if (state.book.body && state.book.leader === user.uid) {
+      setEditorState(() =>
+        EditorState.createWithContent(convertFromHTML(state.book.body))
+      );
+    } else {
+      dispatch({ type: types.UPDATE_BODY, payload: "" });
     }
+    setEditorState((e) => EditorState.moveFocusToEnd(e));
 
     return () => {
-      if (data.leader === user.uid && !publishOpen && !validation()) {
+      if (state.book.leader === user.uid && !publishOpen && !validation()) {
         saveBook();
       }
     };
-    // eslint-disable-next-line
-  }, [data]);
+  }, [state.book.leader, user]);
   const validation = () => {
-    if (title.trim() === "" || body.replace(/<\/?[^>]+>/gi, "").trim() === "") {
-      setError(true);
+    if (
+      state.book.body &&
+      (state.book.title.trim() === "" ||
+        state.book.body.replace(/<\/?[^>]+>/gi, "").trim() === "")
+    ) {
+      dispatch({ type: types.SET_ERROR, payload: true });
       return true;
     } else {
-      setError(false);
+      dispatch({ type: types.SET_ERROR, payload: null });
       return false;
     }
   };
   const saveBook = () => {
     setLoading(true);
-    let docRef = db.collection("books").doc(data.id);
+    let docRef = db.collection("books").doc(state.book.id);
     docRef
       .set(
         {
-          title: title,
-          synopsis: synopsis,
-          body: `${body.trim()}<p>${mobileBody.trim()}</p>`,
+          title: state.book.title,
+          synopsis: state.book.synopsis,
+          body: `${state.book.body.trim()}${
+            state.mobileBody.trim() ? `<p>${state.mobileBody.trim()}</p>` : ""
+          }`,
           updatedAt: timestamp.serverTimestamp(),
         },
         { merge: true }
@@ -208,7 +183,7 @@ const TextEditor = ({ data }) => {
   };
   const savePr = () => {
     setLoading(true);
-    let docRef = db.collection("books").doc(data.id);
+    let docRef = db.collection("books").doc(state.book.id);
     docRef
       .set(
         {
@@ -221,9 +196,11 @@ const TextEditor = ({ data }) => {
         newDoc
           .set({
             prId: newDoc.id,
-            title: title,
-            synopsis: synopsis,
-            body: `${body.trim()}<p>${mobileBody.trim()}</p>`,
+            title: state.book.title,
+            synopsis: state.book.synopsis,
+            body: `${state.book.body.trim()}${
+              state.mobileBody.trim() ? `<p>${state.mobileBody.trim()}</p>` : ""
+            }`,
             updatedAt: timestamp.serverTimestamp(),
             authorUid: user.uid,
             author: {
@@ -241,6 +218,14 @@ const TextEditor = ({ data }) => {
       });
   };
 
+  const updateTitle = (e) => {
+    let title = e.target.value;
+    dispatch({ type: types.UPDATE_TITLE, payload: title });
+  };
+  const updateSynopsis = (e) => {
+    let title = e.target.value;
+    dispatch({ type: types.UPDATE_SYNOPSIS, payload: title });
+  };
   return (
     <>
       <div className="main edit-main">
@@ -250,7 +235,7 @@ const TextEditor = ({ data }) => {
               <ClickAwayListener onClickAway={() => setOpen(false)}>
                 <div className="dialog">
                   <div className="dialog-title">
-                    <h1>{`${data.title}`}</h1>
+                    <h1>{`${state.book.title}`}</h1>
                     <div className="icon-button" onClick={() => setOpen(false)}>
                       <FeatherIcon icon="x" />
                     </div>
@@ -258,7 +243,9 @@ const TextEditor = ({ data }) => {
                   <hr />
                   <div
                     className="dialog-body"
-                    dangerouslySetInnerHTML={createMarkup(data.body)}></div>
+                    dangerouslySetInnerHTML={createMarkup(
+                      state.book.body
+                    )}></div>
                   <hr />
                   <div className="dialog-actions">
                     <div>
@@ -276,7 +263,7 @@ const TextEditor = ({ data }) => {
               <ClickAwayListener onClickAway={() => setPubOpen(false)}>
                 <div>
                   <PublishForm
-                    data={data}
+                    data={state.book}
                     handleClose={() => setPubOpen(false)}
                   />
                 </div>
@@ -285,7 +272,7 @@ const TextEditor = ({ data }) => {
           )}
           <div className="feed sticky1" style={{ margin: 0 }}>
             <div className="footer">
-              {book.leader === user.uid && (
+              {state.book.leader === user.uid && (
                 <Button
                   onClick={() => {
                     if (!validation()) {
@@ -296,7 +283,7 @@ const TextEditor = ({ data }) => {
                   Publish
                 </Button>
               )}
-              {book.leader === user.uid ? (
+              {state.book.leader === user.uid ? (
                 <Button
                   loading={loading && save}
                   onClick={() => {
@@ -341,7 +328,7 @@ const TextEditor = ({ data }) => {
                 Preview
               </Button>
             </div>
-            {data.updatedAt && (
+            {state.book.updatedAt && (
               <p
                 style={{
                   fontSize: "small",
@@ -351,7 +338,7 @@ const TextEditor = ({ data }) => {
                 Updated: {update}
               </p>
             )}
-            {error && (
+            {state.error && (
               <div className="error">*Please fill the required fields</div>
             )}
           </div>
@@ -361,10 +348,10 @@ const TextEditor = ({ data }) => {
               type="text"
               name="title"
               className="textfield title-field"
-              placeholder={`Title${error ? "*" : ""}`}
-              value={title}
+              placeholder={`Title${state.error ? "*" : ""}`}
+              value={state.book.title}
               style={{ width: "100%" }}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={updateTitle}
             />
 
             {isMobile ? (
@@ -372,7 +359,7 @@ const TextEditor = ({ data }) => {
             ) : (
               <Editor
                 editorState={editorState}
-                placeholder={`Write your story...${error ? "*" : ""}`}
+                placeholder={`Write your story...${state.error ? "*" : ""}`}
                 editorClassName="editor-class"
                 wrapperClassName="wrapper-class"
                 toolbarClassName="toolbar-class"
@@ -397,9 +384,9 @@ const TextEditor = ({ data }) => {
 
             <div className="keywords" ref={editorRef}>
               <p>
-                <b>{genres[Number(genre)]}</b>
+                <b>{genres[Number(state.book.genre)]}</b>
               </p>
-              {tags.map((k, index) => (
+              {state.book.tags.map((k, index) => (
                 <p key={`k-${index}`}>{k}</p>
               ))}
             </div>
@@ -410,8 +397,8 @@ const TextEditor = ({ data }) => {
               placeholder="Synopsis"
               rows="5"
               className="textfield"
-              value={synopsis}
-              onChange={(e) => setSynopsis(e.target.value)}
+              value={state.book.synopsis}
+              onChange={updateSynopsis}
               style={{ width: "100%", resize: "none" }}
             />
           </div>
@@ -441,17 +428,20 @@ const TextEditor = ({ data }) => {
   );
 };
 const MobileEditor = () => {
-  const { body, mobileBody, setMobileBody } = usePreview();
+  const { state, dispatch } = usePreview();
 
   const handleChange = (e) => {
-    setMobileBody(e.target.value);
+    let body = e.target.value;
+    useCallback(() => {
+      dispatch({ type: types.SET_MOBILE_BODY, payload: body });
+    }, [body]);
   };
   return (
     <div className="textfield mobile-body" style={{ marginRight: 0 }}>
       <span
         className="mobile-body-span"
         style={{ textAlign: "justify" }}
-        dangerouslySetInnerHTML={createMarkup(body)}></span>
+        dangerouslySetInnerHTML={createMarkup(state.book.body)}></span>
       <p
         style={{
           fontSize: "x-small",
@@ -466,7 +456,7 @@ const MobileEditor = () => {
         title="Story"
         name="body"
         type="text"
-        value={mobileBody}
+        value={state.mobileBody}
         onChange={handleChange}
         placeholder="Continue your story..."
         className="textfield"
@@ -477,15 +467,17 @@ const MobileEditor = () => {
 };
 
 const Preview = () => {
-  const { title, body, mobileBody } = usePreview();
+  const { state } = usePreview();
 
   return (
     <div className="preview-main">
       <div className="preview">
-        <h1>{title}</h1>
+        <h1>{state.book.title}</h1>
         <hr />
         <p
-          dangerouslySetInnerHTML={createMarkup(body + mobileBody)}
+          dangerouslySetInnerHTML={createMarkup(
+            state.book.body + state.mobileBody
+          )}
           style={{ textAlign: "justify" }}
           className="preview-body"></p>
       </div>
@@ -494,7 +486,7 @@ const Preview = () => {
 };
 const Sidebar = () => {
   const [tab, setTab] = useState(0);
-  const { read, messages } = usePreview();
+  const { state } = usePreview();
   const tabs = [
     { icon: "users", title: "Team" },
     { icon: "message-circle", title: "Message" },
@@ -517,8 +509,10 @@ const Sidebar = () => {
                 activeClass(index) === " tab-active" ? "tab-active-icon" : ""
               }`}
             />
-            {messages.length - read !== 0 && index === 1 && (
-              <p className="badge">{Number(messages.length) - Number(read)}</p>
+            {state.messages.length - state.read !== 0 && index === 1 && (
+              <p className="badge">
+                {Number(state.messages.length) - Number(state.read)}
+              </p>
             )}
           </button>
         ))}
@@ -534,29 +528,29 @@ const Message = () => {
   return <MessageMain />;
 };
 const SidebarContent = () => {
-  const { prs, book, requests } = usePreview();
+  const { state } = usePreview();
   const { user } = useAuth();
   return (
     <div className="sidebarContent">
       <Accordion component={<Members />} title="Team Members" isOpen={true} />
-      {book.leader === user.uid && (
+      {state.book.leader === user.uid && (
         <Accordion
           component={<Requests />}
           title="Join Requests"
-          notification={requests.length}
+          notification={state.book.requests.length}
         />
       )}
       <Accordion
         component={<Prs />}
         title="Submit Requests"
-        notification={prs}
+        notification={state.book.prs}
       />
     </div>
   );
 };
-const Mobile = ({ data }) => {
+const Mobile = () => {
   const [tab, setTab] = useState(0);
-  const { messages, read } = usePreview();
+  const { state } = usePreview();
   const tabs = [
     { icon: "book", title: "Edit" },
     { icon: "users", title: "Team" },
@@ -565,7 +559,7 @@ const Mobile = ({ data }) => {
   const activeClass = (index) => {
     return tab === index ? " tab-active" : "";
   };
-  const comps = [<TextEditor data={data} />, <SidebarContent />, <Message />];
+  const comps = [<TextEditor />, <SidebarContent />, <Message />];
   return (
     <div className="main" style={{ flexDirection: "column" }}>
       <div className="tabs edit-tab">
@@ -581,8 +575,10 @@ const Mobile = ({ data }) => {
                 activeClass(index) === " tab-active" ? "tab-active-icon" : ""
               }`}
             />
-            {messages.length - read !== 0 && index === 2 && (
-              <p className="badge">{Number(messages.length) - Number(read)}</p>
+            {state.messages.length - state.read !== 0 && index === 2 && (
+              <p className="badge">
+                {Number(state.messages.length) - Number(state.read)}
+              </p>
             )}
           </button>
         ))}

@@ -23,7 +23,7 @@ const Button = ({
         </div>
       )}
       {children}
-      {((loading && !startIcon) || endIcon) && (
+      {loading && endIcon && (
         <div className="load left">
           {loading && endIcon ? <Loader className="loading-icon" /> : endIcon}
         </div>

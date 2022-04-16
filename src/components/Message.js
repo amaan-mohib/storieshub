@@ -5,9 +5,10 @@ import { useAuth } from "../contexts/AuthContext";
 import { db, timestamp } from "../firebase";
 import { useRouter } from "next/router";
 import Loader from "./Buttons/Loder";
+import { types } from "../contexts/PreviewReducer";
 
 const MessageMain = () => {
-  const { messages, setRead, read } = usePreview();
+  const { state, dispatch } = usePreview();
   const router = useRouter();
   const { id } = router.query;
   const { user } = useAuth();
@@ -15,7 +16,7 @@ const MessageMain = () => {
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
   useEffect(() => {
-    let readLength = messages.length;
+    let readLength = state.messages.length;
     let docRef = db.collection("messages").doc(id);
     docRef
       .set(
@@ -25,12 +26,13 @@ const MessageMain = () => {
         { merge: true }
       )
       .then(() => {
-        setRead(readLength);
+        dispatch({ type: types.SET_READ, payload: readLength });
       })
       .catch((err) => console.error(err));
     scrollRef.current.parentNode.scrollTop =
       scrollRef.current.offsetTop - scrollRef.current.parentNode.offsetTop;
-  }, [read]);
+  }, [state.read]);
+
   const onKeyDown = (e) => {
     const { key } = e;
     if (key === "Enter") {
@@ -60,7 +62,10 @@ const MessageMain = () => {
           },
         })
         .then(() => {
-          setRead(messages.length + 1);
+          dispatch({
+            type: types.SET_READ,
+            payload: state.messages.length + 1,
+          });
           setLoading(false);
           scrollRef.current.parentNode.scrollTop =
             scrollRef.current.offsetTop -
@@ -73,8 +78,8 @@ const MessageMain = () => {
     <div className="message-main">
       <div className="message-body">
         <div ref={scrollRef}></div>
-        {messages.length > 0 ? (
-          messages.map((msg) => (
+        {state.messages.length > 0 ? (
+          state.messages.map((msg) => (
             <div
               key={msg.id}
               className={`message-whole${

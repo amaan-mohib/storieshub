@@ -6,13 +6,13 @@ import { db, timestamp } from "../firebase";
 import { useRouter } from "next/router";
 import Button from "./Buttons";
 import FeatherIcon from "feather-icons-react";
+import { types } from "../contexts/PreviewReducer";
 
 const PublishForm = ({ handleClose, data }) => {
   const history = useRouter();
   const { id } = history.query;
   const [complete, setComp] = useState(false);
-  const { title, synopsis, genre, tags, nsfw, body, mobileBody, otherData } =
-    usePreview();
+  const { state } = usePreview();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [next, setNext] = useState(false);
@@ -21,10 +21,10 @@ const PublishForm = ({ handleClose, data }) => {
 
   const validation = () => {
     if (
-      title.trim() === "" ||
-      `${body.trim()}+${mobileBody.trim()}` === "" ||
-      synopsis.trim() === "" ||
-      genre === ""
+      state.book.title.trim() === "" ||
+      `${state.book.body.trim()}+${state.mobileBody.trim()}` === "" ||
+      state.book.synopsis.trim() === "" ||
+      state.book.genre === ""
     ) {
       setError(true);
       return true;
@@ -65,16 +65,9 @@ const PublishForm = ({ handleClose, data }) => {
     docRef
       .set(
         {
+          ...state.book,
           id: docRef.id,
-          title: title,
-          body: `${body.trim()}<p>${mobileBody.trim()}</p>`,
-          synopsis: synopsis,
-          genre: genre,
-          tags: tags,
-          nsfw: nsfw,
-          authors: otherData,
-          uids: data.uids,
-          leader: data.leader,
+          body: `${state.book.body.trim()}<p>${state.mobileBody.trim()}</p>`,
           complete: complete,
           updatedAt: timestamp.serverTimestamp(),
         },
@@ -162,17 +155,33 @@ const PublishForm = ({ handleClose, data }) => {
   );
 };
 const PublishBody = ({ story, error }) => {
-  const {
-    title,
-    setTitle,
-    synopsis,
-    setSynopsis,
-    nsfw,
-    setNsfw,
-    genre,
-    setGenre,
-    tags,
-  } = usePreview();
+  const { state, dispatch } = usePreview();
+
+  const [data, setData] = useState({
+    title: state.book.title,
+    synopsis: state.book.synopsis,
+    nsfw: state.book.nsfw,
+    genre: state.book.genre,
+  });
+
+  const updateVal = (e) => {
+    let value = e.target.value;
+    let name = e.target.name;
+    const newData = {
+      ...data,
+      [name]: value,
+    };
+    setData(newData);
+    dispatch({ type: types.UPDATE_BOOK, payload: newData });
+  };
+  const setNsfw = (val) => {
+    const newData = {
+      ...data,
+      nsfw: val,
+    };
+    setData(newData);
+    dispatch({ type: types.UPDATE_BOOK, payload: newData });
+  };
 
   return (
     <div className="feed">
@@ -182,17 +191,17 @@ const PublishBody = ({ story, error }) => {
         name="title"
         className="textfield title-field"
         placeholder={`Title${error ? "*" : ""}`}
-        value={title}
+        value={data.title}
         style={{ width: "100%" }}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={updateVal}
         autoFocus
         autoCapitalize="words"
       />
       <div className="keywords">
         <p>
-          <b>{genres[Number(genre)]}</b>
+          <b>{genres[Number(data.genre)]}</b>
         </p>
-        {tags.map((k) => (
+        {state.book.tags.map((k) => (
           <p key={k}>{k}</p>
         ))}
       </div>
@@ -203,16 +212,17 @@ const PublishBody = ({ story, error }) => {
         placeholder={`Synopsis${error ? "*" : ""}`}
         rows="5"
         className="textfield"
-        value={synopsis}
-        onChange={(e) => setSynopsis(e.target.value)}
+        value={data.synopsis}
+        onChange={updateVal}
         style={{ width: "100%", resize: "none" }}
       />
       <div>
         <select
           id="genres"
-          value={genre}
+          value={data.genre}
           title="Genre"
-          onChange={(e) => setGenre(e.target.value)}>
+          name="genre"
+          onChange={updateVal}>
           <option value="" selected style={{ color: "var(--secondary-text)" }}>
             {`Select Genre${error ? "*" : ""}`}
           </option>
@@ -223,9 +233,9 @@ const PublishBody = ({ story, error }) => {
           ))}
         </select>
       </div>
-      <div className="toggleDiv" onClick={() => setNsfw(!nsfw)}>
+      <div className="toggleDiv" onClick={() => setNsfw(!data.nsfw)}>
         <p style={{ fontSize: "small" }}>Matured Content</p>
-        <ToggleButton value={nsfw} onToggle={() => setNsfw(!nsfw)} />
+        <ToggleButton value={data.nsfw} onToggle={() => setNsfw(!data.nsfw)} />
       </div>
       {story}
     </div>

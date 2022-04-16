@@ -8,19 +8,10 @@ import Link from "./Link";
 import FeatherIcon from "feather-icons-react";
 import { webUrl } from "../config";
 import Button from "./Buttons";
+import { types } from "../contexts/PreviewReducer";
 
 const Members = () => {
-  const {
-    otherData,
-    title,
-    tags,
-    uuid,
-    setUuid,
-    book,
-    requested,
-    setRequested,
-    genre,
-  } = usePreview();
+  const { state, dispatch } = usePreview();
   const [show, setShow] = useState(true);
   const router = useRouter();
   const { id } = router.query;
@@ -34,7 +25,7 @@ const Members = () => {
     const uuid = transalator.generate();
     const uid = transalator.toUUID(uuid);
     setShortId(transalator.fromUUID(uid));
-    setUuid(uid);
+    dispatch({ type: types.UPDATE_JOIN_ID, payload: uid });
     let docRef = db.collection("books").doc(id);
     docRef
       .set(
@@ -49,12 +40,12 @@ const Members = () => {
       .catch((err) => console.error(err));
   };
   useEffect(() => {
-    if (uuid && uuid !== "") {
+    if (state.book.joinID) {
       const transalator = short();
-      setShortId(transalator.fromUUID(uuid));
+      setShortId(transalator.fromUUID(state.book.joinID));
       setShow(false);
     }
-  }, [uuid]);
+  }, [state.book.joinID]);
   const requestMembers = () => {
     let docRef = db.collection("books").doc(id);
     let reqRef = db.collection("requests").doc(id);
@@ -70,19 +61,19 @@ const Members = () => {
         reqRef
           .set({
             teamId: id,
-            title: title,
-            tags: tags,
+            title: state.book.title,
+            tags: state.book.tags,
             leader: {
               uid: user.uid,
               displayName: user.displayName,
               photoURL: user.photoURL,
             },
             updatedAt: timestamp.serverTimestamp(),
-            members: otherData.length,
-            genre: genre,
+            members: state.book.authors.length,
+            genre: state.book.genre,
           })
           .then(() => {
-            setRequested(true);
+            dispatch({ type: types.UPDATE_REQUESTED, payload: true });
             setLoading(false);
           })
           .catch((err) => console.error(err));
@@ -103,7 +94,7 @@ const Members = () => {
         reqRef
           .delete()
           .then(() => {
-            setRequested(false);
+            dispatch({ type: types.UPDATE_REQUESTED, payload: false });
           })
           .catch((err) => console.error(err));
       })
@@ -132,7 +123,7 @@ const Members = () => {
   return (
     <div>
       <ul className="team-members">
-        {otherData.map((a) => (
+        {state.book.authors.map((a) => (
           <li className="team-member" key={a.id}>
             <img
               referrerPolicy="no-referrer"
@@ -170,7 +161,7 @@ const Members = () => {
           </li>
         ))}
       </ul>
-      {book.leader === user.uid && (
+      {state.book.leader === user.uid && (
         <div style={{ display: "flex", flexDirection: "column" }}>
           {!show && (
             <p>
@@ -247,7 +238,7 @@ const Members = () => {
               </>
             )}
           </div>
-          {!requested ? (
+          {!state.book.requested ? (
             <Button
               outlined
               onClick={requestMembers}

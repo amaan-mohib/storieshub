@@ -3,11 +3,13 @@ import { useRouter } from "next/router";
 import { usePreview } from "../contexts/PreviewContext";
 import { db, timestamp } from "../firebase";
 import Link from "./Link";
+import { types } from "../contexts/PreviewReducer";
 
 const Requests = () => {
-  const { requests, setOtherData, setRequests } = usePreview();
+  const { state, dispatch } = usePreview();
   const router = useRouter();
   const { id } = router.query;
+
   const approve = (author, uid) => {
     let docRef = db.collection("books").doc(id);
     docRef
@@ -56,8 +58,8 @@ const Requests = () => {
               );
           })
           .then(() => {
-            setOtherData((d) => [...d, author]);
-            setRequests((d) => d.filter((data) => data.id !== uid));
+            dispatch({ type: types.UPDATE_AUTHORS, payload: author });
+            dispatch({ type: types.UPDATE_REQUESTS, payload: uid });
           })
           .catch((err) => console.error(err));
       })
@@ -74,14 +76,14 @@ const Requests = () => {
         { merge: true }
       )
       .then(() => {
-        setRequests((d) => d.filter((data) => data.id !== uid));
+        dispatch({ type: types.UPDATE_REQUESTS, payload: uid });
       })
       .catch((err) => console.error(err));
   };
-  return requests.length > 0 ? (
+  return state.book.requests.length > 0 ? (
     <div>
       <ul className="team-members">
-        {requests.map((data) => (
+        {state.book.requests.map((data) => (
           <li className="team-member request" key={data.id}>
             <div className="team-member-div">
               <img

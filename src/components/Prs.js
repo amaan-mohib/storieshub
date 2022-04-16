@@ -6,9 +6,10 @@ import FeatherIcon from "feather-icons-react";
 import { useRouter } from "next/router";
 import { createMarkup } from "../utils/utils";
 import Button from "./Buttons";
+import { types } from "../contexts/PreviewReducer";
 
 const Prs = () => {
-  const { setPrs } = usePreview();
+  const { dispatch } = usePreview();
   const router = useRouter();
   const [prs, setThisPrs] = useState([]);
   const [copied, setCopied] = useState(false);
@@ -24,7 +25,7 @@ const Prs = () => {
     let unsub = docRef.orderBy("updatedAt", "desc").onSnapshot((query) => {
       const docs = query.docs.map((doc) => doc.data());
       setThisPrs(docs);
-      setPrs(docs.length);
+      dispatch({ type: types.UPDATE_PRS, payload: docs.length });
     });
     return () => {
       unsub && unsub();
