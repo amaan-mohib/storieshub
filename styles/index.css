@@ -80,6 +80,10 @@ nav {
 .nav-img {
   width: 2rem !important;
 }
+.nav-items{
+  display: flex;
+  align-items: center;
+}
 .nav-item {
   display: flex;
   align-items: center;

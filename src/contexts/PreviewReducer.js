@@ -22,6 +22,8 @@ export const initialState = {
   messages: [],
   mobileBody: "",
   read: 0,
+  preview: false,
+  previewRef: null,
 };
 
 export const types = {
@@ -38,6 +40,9 @@ export const types = {
   UPDATE_AUTHORS: "UPDATE_AUTHORS",
   UPDATE_REQUESTS: "UPDATE_REQUESTS",
   UPDATE_PRS: "UPDATE_PRS",
+  SET_PREVIEW: "SET_PREVIEW",
+  SET_PREVIEW_REF: "SET_PREVIEW_REF",
+  UPDATE_STAT: "UPDATE_STAT",
 };
 export default (state = initialState, { type, payload }) => {
   switch (type) {
@@ -94,6 +99,18 @@ export default (state = initialState, { type, payload }) => {
     case types.UPDATE_PRS:
       return produce(state, (draft) => {
         draft.book.prs = payload;
+      });
+    case types.SET_PREVIEW:
+      return produce(state, (draft) => {
+        draft.preview = payload;
+      });
+    case types.SET_PREVIEW_REF:
+      return produce(state, (draft) => {
+        draft.previewRef = payload;
+      });
+    case types.UPDATE_STAT:
+      return produce(state, (draft) => {
+        draft.book.updatedAt = payload;
       });
     default:
       throw new Error("invalid type");

@@ -12,6 +12,7 @@ const app = firebase;
 export const auth = app.auth();
 export const db = app.firestore();
 export const timestamp = firebase.firestore.FieldValue;
+export const t = firebase.firestore.Timestamp.fromDate(new Date());
 
 export const firebaseUIConfig = {
   signInFlow: "popup",

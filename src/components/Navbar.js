@@ -5,8 +5,9 @@ import FeatherIcon from "feather-icons-react";
 import ClickAwayListener from "react-click-away-listener";
 import { useRouter } from "next/router";
 import Button from "./Buttons";
+import Toolbar from "./Toolbar/Toolbar";
 
-const Navbar = () => {
+const Navbar = ({ isEdit }) => {
   const { user, logout } = useAuth();
   const router = useRouter();
 
@@ -38,6 +39,7 @@ const Navbar = () => {
       </div>
       {user ? (
         <div className="nav-items">
+          {isEdit && <Toolbar />}
           <NavItem
             icon={
               <img

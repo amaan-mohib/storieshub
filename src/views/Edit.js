@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { convertToRaw, EditorState } from "draft-js";
 import { useAuth } from "../contexts/AuthContext";
-import { db, timestamp } from "../firebase";
+import { db } from "../firebase";
 import Navbar from "../components/Navbar";
 import PreviewProvider, { usePreview } from "../contexts/PreviewContext";
 import { convertFromHTML } from "draft-convert";
@@ -10,10 +10,8 @@ import draftToHtml from "draftjs-to-html";
 import FeatherIcon from "feather-icons-react";
 import { genres } from "./Create";
 import { isMobile } from "react-device-detect";
-import ClickAwayListener from "react-click-away-listener";
 import MessageMain from "../components/Message";
 import Prs from "../components/Prs";
-import PublishForm from "../components/PublishForm";
 import { useRouter } from "next/router";
 import SEO from "../components/Helmet";
 import Members from "../components/Members";
@@ -25,14 +23,13 @@ const Editor = dynamic(
   { ssr: false }
 );
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import Button from "../components/Buttons";
 import { types } from "../contexts/PreviewReducer";
 
 const Edit = () => {
   return (
     <PreviewProvider>
       <SEO title="Edit" />
-      <Navbar />
+      <Navbar isEdit />
       <EditComp />
     </PreviewProvider>
   );
@@ -106,15 +103,9 @@ const TopComp = () => {
 
 const TextEditor = () => {
   const { state, dispatch } = usePreview();
-  const { user } = useAuth();
   const previewRef = useRef(null);
+  const { user } = useAuth();
   const editorRef = useRef(null);
-  const [preview, setPreview] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [save, setSave] = useState(false);
-  const [update, setUpdate] = useState(new Date().toLocaleDateString());
-  const [open, setOpen] = useState(false);
-  const [publishOpen, setPubOpen] = useState(false);
   const [editorState, setEditorState] = useState(() =>
     EditorState.createWithContent(convertFromHTML(""))
   );
@@ -129,7 +120,10 @@ const TextEditor = () => {
   );
 
   useEffect(() => {
-    console.log(state.book.leader);
+    dispatch({ type: types.SET_PREVIEW_REF, payload: previewRef.current });
+  }, [previewRef]);
+
+  useEffect(() => {
     if (state.book.body && state.book.leader === user.uid) {
       setEditorState(() =>
         EditorState.createWithContent(convertFromHTML(state.book.body))
@@ -138,85 +132,7 @@ const TextEditor = () => {
       dispatch({ type: types.UPDATE_BODY, payload: "" });
     }
     setEditorState((e) => EditorState.moveFocusToEnd(e));
-
-    return () => {
-      if (state.book.leader === user.uid && !publishOpen && !validation()) {
-        saveBook();
-      }
-    };
   }, [state.book.leader, user]);
-  const validation = () => {
-    if (
-      state.book.body &&
-      (state.book.title.trim() === "" ||
-        state.book.body.replace(/<\/?[^>]+>/gi, "").trim() === "")
-    ) {
-      dispatch({ type: types.SET_ERROR, payload: true });
-      return true;
-    } else {
-      dispatch({ type: types.SET_ERROR, payload: null });
-      return false;
-    }
-  };
-  const saveBook = () => {
-    setLoading(true);
-    let docRef = db.collection("books").doc(state.book.id);
-    docRef
-      .set(
-        {
-          title: state.book.title,
-          synopsis: state.book.synopsis,
-          body: `${state.book.body.trim()}${
-            state.mobileBody.trim() ? `<p>${state.mobileBody.trim()}</p>` : ""
-          }`,
-          updatedAt: timestamp.serverTimestamp(),
-        },
-        { merge: true }
-      )
-      .then(() => {
-        setUpdate(new Date().toLocaleString());
-        setLoading(false);
-        setSave(false);
-        console.log("saved");
-      })
-      .catch((err) => console.error(err));
-  };
-  const savePr = () => {
-    setLoading(true);
-    let docRef = db.collection("books").doc(state.book.id);
-    docRef
-      .set(
-        {
-          pr: timestamp.increment(1),
-        },
-        { merge: true }
-      )
-      .then(() => {
-        let newDoc = docRef.collection("prs").doc();
-        newDoc
-          .set({
-            prId: newDoc.id,
-            title: state.book.title,
-            synopsis: state.book.synopsis,
-            body: `${state.book.body.trim()}${
-              state.mobileBody.trim() ? `<p>${state.mobileBody.trim()}</p>` : ""
-            }`,
-            updatedAt: timestamp.serverTimestamp(),
-            authorUid: user.uid,
-            author: {
-              id: user.uid,
-              displayName: user.displayName,
-              photoURL: user.photoURL,
-            },
-          })
-          .then(() => {
-            setLoading(false);
-            setSave(false);
-            console.log("saved pr");
-          })
-          .catch((err) => console.error(err));
-      });
-  };
 
   const updateTitle = (e) => {
     let title = e.target.value;
@@ -230,118 +146,6 @@ const TextEditor = () => {
     <>
       <div className="main edit-main">
         <div className="feeds">
-          {open && (
-            <div className="dialog-bg">
-              <ClickAwayListener onClickAway={() => setOpen(false)}>
-                <div className="dialog">
-                  <div className="dialog-title">
-                    <h1>{`${state.book.title}`}</h1>
-                    <div className="icon-button" onClick={() => setOpen(false)}>
-                      <FeatherIcon icon="x" />
-                    </div>
-                  </div>
-                  <hr />
-                  <div
-                    className="dialog-body"
-                    dangerouslySetInnerHTML={createMarkup(
-                      state.book.body
-                    )}></div>
-                  <hr />
-                  <div className="dialog-actions">
-                    <div>
-                      <Button secondary onClick={() => setOpen(false)}>
-                        Close
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </ClickAwayListener>
-            </div>
-          )}
-          {publishOpen && (
-            <div className="dialog-bg">
-              <ClickAwayListener onClickAway={() => setPubOpen(false)}>
-                <div>
-                  <PublishForm
-                    data={state.book}
-                    handleClose={() => setPubOpen(false)}
-                  />
-                </div>
-              </ClickAwayListener>
-            </div>
-          )}
-          <div className="feed sticky1" style={{ margin: 0 }}>
-            <div className="footer">
-              {state.book.leader === user.uid && (
-                <Button
-                  onClick={() => {
-                    if (!validation()) {
-                      saveBook();
-                      setPubOpen(true);
-                    }
-                  }}>
-                  Publish
-                </Button>
-              )}
-              {state.book.leader === user.uid ? (
-                <Button
-                  loading={loading && save}
-                  onClick={() => {
-                    if (!validation()) {
-                      setSave(true);
-                      saveBook();
-                    }
-                  }}
-                  outlined>
-                  Save
-                </Button>
-              ) : (
-                <div className="footer">
-                  <Button
-                    loading={loading && save}
-                    onClick={() => {
-                      if (!validation()) {
-                        setSave(true);
-                        savePr();
-                      }
-                    }}>
-                    Submit
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      setOpen(true);
-                    }}
-                    outlined>
-                    Draft
-                  </Button>
-                </div>
-              )}
-              <Button
-                onClick={() => {
-                  setPreview(true);
-                  console.log(previewRef.current);
-                  setTimeout(() => {
-                    previewRef.current.scrollIntoView({ behavior: "smooth" });
-                  }, 100);
-                }}
-                secondary>
-                Preview
-              </Button>
-            </div>
-            {state.book.updatedAt && (
-              <p
-                style={{
-                  fontSize: "small",
-                  color: "var(--secondary-text)",
-                  marginTop: "10px",
-                }}>
-                Updated: {update}
-              </p>
-            )}
-            {state.error && (
-              <div className="error">*Please fill the required fields</div>
-            )}
-          </div>
           <div className="feed">
             <input
               title="Title"
@@ -406,7 +210,7 @@ const TextEditor = () => {
         <Sidebar />
       </div>
       <div ref={previewRef}></div>
-      {preview && (
+      {state.preview && (
         <>
           <Preview />
           <div
@@ -418,7 +222,7 @@ const TextEditor = () => {
                 inline: "end",
                 block: "end",
               });
-              setPreview(false);
+              dispatch({ type: types.SET_PREVIEW, payload: false });
             }}>
             <FeatherIcon icon="eye-off" />
           </div>
